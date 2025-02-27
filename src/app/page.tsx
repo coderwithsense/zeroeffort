@@ -7,14 +7,12 @@ import {
   Clock,
   Brain,
   CalendarDays,
-  Sparkles,
   ChevronRight,
   Check,
   Star,
   Zap,
   MousePointerClick,
   Search,
-  ArrowRight,
   Instagram,
   Linkedin,
   Twitter,
@@ -279,7 +277,7 @@ const Index = () => {
               Zero-Effort Management
             </h3>
             <p className="text-secondary">
-              Tell us your goal, and we'll create your perfect daily action plan
+              Tell us your goal, and we will create your perfect daily action plan
               with no additional decisions required.
             </p>
           </div>

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { UserButton } from "@clerk/clerk-react";
-import { CalendarDays, Clock, Brain, Sparkles, Zap, Bell, ArrowRight, CheckCircle, ChevronRight } from "lucide-react";
+import { CalendarDays, Clock, Brain, Sparkles, Zap, CheckCircle, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Dashboard = () => {
@@ -95,7 +95,7 @@ const Dashboard = () => {
                 </span>
               </h1>
               <p className="text-xl text-gray-200 max-w-md">
-                We're building something extraordinary. Join our journey and be the first to experience the future of productivity.
+                We are building something extraordinary. Join our journey and be the first to experience the future of productivity.
               </p>
             </div>
             
@@ -146,7 +146,7 @@ const Dashboard = () => {
               ) : (
                 <div className="mt-4 bg-green-500/20 p-4 rounded-lg flex items-center gap-2">
                   <CheckCircle className="h-5 w-5 text-green-400" />
-                  <span className="text-green-200">You're on the list! We'll notify you when we launch.</span>
+                  <span className="text-green-200">You are on the list! We will notify you when we launch.</span>
                 </div>
               )}
             </div>
