@@ -43,7 +43,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen gradient-bg">
+    <div className="min-h-screen gradient-bg overflow-x-hidden">
       {/* Navigation */}
       <nav className="fixed w-full top-0 z-50 glassmorphism border-b border-white/20 rounded-b-xl">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
@@ -91,36 +91,92 @@ const Index = () => {
       <section className="glow pt-32 pb-20 px-4 overflow-hidden">
         <div className="container mx-auto text-center relative z-10">
           <h1 className="text-5xl md:text-7xl font-bold mb-6 hero-gradient-text">
-            Transform Tasks to
-            <br />
-            Action in Minutes
+            Automate Your Productivity<br />
+            With Zero Effort
           </h1>
-          <p className="text-xl md:text-2xl text-slate-600 mb-12 max-w-2xl mx-auto">
-            Generate beautiful and actionable productivity plans from a simple
-            text description. Stop deciding, start achieving.
+          <p className="text-xl md:text-2xl text-slate-600 mb-6 max-w-2xl mx-auto">
+            Generate actionable productivity plans from simple text prompts. Let AI handle your task management so you can focus on execution.
           </p>
-          <form
-            onSubmit={handleWaitlistSignup}
-            className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto"
-          >
-            <Input
-              type="email"
-              placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="h-12 shadow-lg rounded-xl border-white/30 focus:border-green-500"
-            />
-            <Button
-              type="submit"
-              size="lg"
-              className="h-12 gradient-button rounded-xl shadow-lg"
+          
+          {/* Added use case bullets for clarity */}
+          <div className="flex flex-wrap justify-center gap-4 mb-12">
+            <div className="flex items-center bg-white/30 backdrop-blur-sm px-4 py-2 rounded-full">
+              <Check className="h-4 w-4 text-green-500 mr-2" />
+              <span className="text-sm font-medium">Task Management</span>
+            </div>
+            <div className="flex items-center bg-white/30 backdrop-blur-sm px-4 py-2 rounded-full">
+              <Check className="h-4 w-4 text-green-500 mr-2" />
+              <span className="text-sm font-medium">Scheduling</span>
+            </div>
+            <div className="flex items-center bg-white/30 backdrop-blur-sm px-4 py-2 rounded-full">
+              <Check className="h-4 w-4 text-green-500 mr-2" />
+              <span className="text-sm font-medium">Progress Tracking</span>
+            </div>
+          </div>
+          
+          {/* Enhanced waitlist section */}
+          <div className="bg-white/40 backdrop-blur-sm p-6 rounded-2xl max-w-md mx-auto shadow-lg border border-white/30">
+            <h3 className="text-lg font-semibold mb-2">Join Our Exclusive Waitlist</h3>
+            <p className="text-sm text-slate-600 mb-4">Be among the first to experience ZeroEffort and receive early-bird pricing.</p>
+            <form
+              onSubmit={handleWaitlistSignup}
+              className="flex flex-col sm:flex-row gap-4 justify-center"
             >
-              Join Waitlist
-              <ChevronRight className="ml-2 h-4 w-4" />
-            </Button>
-          </form>
-          <div className="mt-4 py-2 px-6 bg-yellow-100 text-yellow-800 rounded-full inline-block shadow-md">
+              <Input
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="h-12 shadow-lg rounded-xl border-white/30 focus:border-green-500"
+                required
+              />
+              <Button
+                type="submit"
+                size="lg"
+                className="h-12 gradient-button rounded-xl shadow-lg"
+              >
+                Join Waitlist
+                <ChevronRight className="ml-2 h-4 w-4" />
+              </Button>
+            </form>
+            <p className="text-xs text-slate-500 mt-4">Join 350+ professionals already on the waitlist</p>
+          </div>
+          
+          <div className="mt-6 py-2 px-6 bg-yellow-100 text-yellow-800 rounded-full inline-block shadow-md">
             🚀 Early bird offer: $29 lifetime access for first 100 signups
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works Section - Added based on feedback */}
+      <section className="py-16 relative z-10">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-12 hero-gradient-text">How ZeroEffort Works</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <div className="bg-white/40 backdrop-blur-sm p-6 rounded-xl shadow-md border border-white/30 text-center">
+              <div className="w-12 h-12 flex items-center justify-center bg-green-100 rounded-full mx-auto mb-4">
+                <span className="font-bold text-green-600">1</span>
+              </div>
+              <h3 className="font-medium mb-2">Describe Your Task or Goal</h3>
+              <p className="text-sm text-slate-600">Simply tell ZeroEffort what you need to accomplish in plain text.</p>
+            </div>
+            
+            <div className="bg-white/40 backdrop-blur-sm p-6 rounded-xl shadow-md border border-white/30 text-center">
+              <div className="w-12 h-12 flex items-center justify-center bg-blue-100 rounded-full mx-auto mb-4">
+                <span className="font-bold text-blue-600">2</span>
+              </div>
+              <h3 className="font-medium mb-2">AI Creates Your Plan</h3>
+              <p className="text-sm text-slate-600">Our AI analyzes your needs and generates a tailored productivity plan.</p>
+            </div>
+            
+            <div className="bg-white/40 backdrop-blur-sm p-6 rounded-xl shadow-md border border-white/30 text-center">
+              <div className="w-12 h-12 flex items-center justify-center bg-purple-100 rounded-full mx-auto mb-4">
+                <span className="font-bold text-purple-600">3</span>
+              </div>
+              <h3 className="font-medium mb-2">Execute & Track Progress</h3>
+              <p className="text-sm text-slate-600">Follow your plan with reminders and adaptive adjustments as you go.</p>
+            </div>
           </div>
         </div>
       </section>
@@ -156,6 +212,42 @@ const Index = () => {
           </div>
         </div>
       </section>
+      
+      {/* Added: Who It's For Section */}
+      <section className="py-16 relative z-10">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-4 hero-gradient-text">Who Is ZeroEffort For?</h2>
+          <p className="text-center text-slate-600 mb-12 max-w-2xl mx-auto">
+            Our platform helps a wide range of professionals eliminate decision fatigue and achieve more with less effort.
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            <div className="bg-white/30 backdrop-blur-sm p-6 rounded-xl shadow-md hover:shadow-lg transition-all border border-white/20">
+              <h3 className="font-semibold mb-3">Busy Professionals</h3>
+              <p className="text-sm text-slate-600 mb-4">
+                Executives and professionals who need to manage multiple projects and priorities efficiently.
+              </p>
+              <div className="text-xs text-slate-500">Perfect for: Project Managers, Executives, Consultants</div>
+            </div>
+            
+            <div className="bg-white/30 backdrop-blur-sm p-6 rounded-xl shadow-md hover:shadow-lg transition-all border border-white/20">
+              <h3 className="font-semibold mb-3">Entrepreneurs & Founders</h3>
+              <p className="text-sm text-slate-600 mb-4">
+                Small business owners and startup founders juggling multiple roles with limited time.
+              </p>
+              <div className="text-xs text-slate-500">Perfect for: Startup Teams, Small Business Owners, Solopreneurs</div>
+            </div>
+            
+            <div className="bg-white/30 backdrop-blur-sm p-6 rounded-xl shadow-md hover:shadow-lg transition-all border border-white/20">
+              <h3 className="font-semibold mb-3">Content Creators</h3>
+              <p className="text-sm text-slate-600 mb-4">
+                Writers, designers, and marketers who need to organize their creative workflow efficiently.
+              </p>
+              <div className="text-xs text-slate-500">Perfect for: Bloggers, Social Media Managers, Artists</div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Playground Section */}
       <section id="playground" className="section-container">
@@ -165,11 +257,10 @@ const Index = () => {
           <div className="absolute -bottom-32 -left-20 w-80 h-80 bg-blue-200/20 rounded-full blur-3xl"></div>
 
           <h2 className="text-4xl font-bold text-center mb-4 hero-gradient-text relative z-10">
-            Playground
+            Try It Yourself
           </h2>
           <p className="text-center text-slate-600 mb-12 max-w-2xl mx-auto relative z-10">
-            Try ZeroEffort instantly. Describe your task and let AI create your
-            perfect productivity plan.
+            Experience ZeroEffort in action. Describe your task and let our AI create your perfect productivity plan.
           </p>
 
           <div className="max-w-3xl mx-auto bg-transparent rounded-2xl overflow-hidden relative z-10">
@@ -264,8 +355,7 @@ const Index = () => {
           Why Choose ZeroEffort?
         </h2>
         <p className="text-center text-slate-600 mb-16 max-w-2xl mx-auto">
-          Our AI productivity coach eliminates decision fatigue and helps you
-          achieve more with less effort.
+          Our AI productivity assistant eliminates decision fatigue and helps you achieve more with less effort.
         </p>
 
         <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
@@ -489,149 +579,6 @@ const Index = () => {
                 </a>
               </div>
             </div>
-
-            {/* Navigation sections */}
-            {/* <div className="grid grid-cols-2 md:grid-cols-3 gap-x-12 gap-y-10">
-              <div>
-                <h3 className="font-semibold mb-5 bg-gradient-to-r from-green-500 to-blue-500 bg-clip-text text-transparent">
-                  Product
-                </h3>
-                <ul className="space-y-3">
-                  <li>
-                    <a
-                      href="#features"
-                      className="text-slate-600 hover:text-green-500 transition-colors flex items-center group"
-                    >
-                      <span className="w-0 group-hover:w-2 h-px bg-green-500 mr-0 group-hover:mr-2 transition-all duration-300"></span>
-                      Features
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#pricing"
-                      className="text-slate-600 hover:text-green-500 transition-colors flex items-center group"
-                    >
-                      <span className="w-0 group-hover:w-2 h-px bg-green-500 mr-0 group-hover:mr-2 transition-all duration-300"></span>
-                      Pricing
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#playground"
-                      className="text-slate-600 hover:text-green-500 transition-colors flex items-center group"
-                    >
-                      <span className="w-0 group-hover:w-2 h-px bg-green-500 mr-0 group-hover:mr-2 transition-all duration-300"></span>
-                      Playground
-                    </a>
-                  </li>
-                </ul>
-              </div>
-
-              <div>
-                <h3 className="font-semibold mb-5 bg-gradient-to-r from-green-500 to-blue-500 bg-clip-text text-transparent">
-                  Company
-                </h3>
-                <ul className="space-y-3">
-                  <li>
-                    <a
-                      href="#"
-                      className="text-slate-600 hover:text-green-500 transition-colors flex items-center group"
-                    >
-                      <span className="w-0 group-hover:w-2 h-px bg-green-500 mr-0 group-hover:mr-2 transition-all duration-300"></span>
-                      About
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="text-slate-600 hover:text-green-500 transition-colors flex items-center group"
-                    >
-                      <span className="w-0 group-hover:w-2 h-px bg-green-500 mr-0 group-hover:mr-2 transition-all duration-300"></span>
-                      Blog
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="text-slate-600 hover:text-green-500 transition-colors flex items-center group"
-                    >
-                      <span className="w-0 group-hover:w-2 h-px bg-green-500 mr-0 group-hover:mr-2 transition-all duration-300"></span>
-                      Careers
-                    </a>
-                  </li>
-                </ul>
-              </div>
-
-              <div>
-                <h3 className="font-semibold mb-5 bg-gradient-to-r from-green-500 to-blue-500 bg-clip-text text-transparent">
-                  Support
-                </h3>
-                <ul className="space-y-3">
-                  <li>
-                    <a
-                      href="#"
-                      className="text-slate-600 hover:text-green-500 transition-colors flex items-center group"
-                    >
-                      <span className="w-0 group-hover:w-2 h-px bg-green-500 mr-0 group-hover:mr-2 transition-all duration-300"></span>
-                      FAQ
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="text-slate-600 hover:text-green-500 transition-colors flex items-center group"
-                    >
-                      <span className="w-0 group-hover:w-2 h-px bg-green-500 mr-0 group-hover:mr-2 transition-all duration-300"></span>
-                      Contact
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="text-slate-600 hover:text-green-500 transition-colors flex items-center group"
-                    >
-                      <span className="w-0 group-hover:w-2 h-px bg-green-500 mr-0 group-hover:mr-2 transition-all duration-300"></span>
-                      Knowledge Base
-                    </a>
-                  </li>
-                </ul>
-              </div>
-
-              <div>
-                <h3 className="font-semibold mb-5 bg-gradient-to-r from-green-500 to-blue-500 bg-clip-text text-transparent">
-                  Legal
-                </h3>
-                <ul className="space-y-3">
-                  <li>
-                    <a
-                      href="#"
-                      className="text-slate-600 hover:text-green-500 transition-colors flex items-center group"
-                    >
-                      <span className="w-0 group-hover:w-2 h-px bg-green-500 mr-0 group-hover:mr-2 transition-all duration-300"></span>
-                      Privacy
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="text-slate-600 hover:text-green-500 transition-colors flex items-center group"
-                    >
-                      <span className="w-0 group-hover:w-2 h-px bg-green-500 mr-0 group-hover:mr-2 transition-all duration-300"></span>
-                      Terms
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="text-slate-600 hover:text-green-500 transition-colors flex items-center group"
-                    >
-                      <span className="w-0 group-hover:w-2 h-px bg-green-500 mr-0 group-hover:mr-2 transition-all duration-300"></span>
-                      Security
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div> */}
           </div>
 
           {/* Newsletter section */}
@@ -662,26 +609,6 @@ const Index = () => {
           {/* Copyright */}
           <div className="pt-8 border-t border-slate-200/70 flex flex-col md:flex-row justify-between items-center text-slate-500 text-sm">
             <p>&copy; 2025 ZeroEffort. All rights reserved.</p>
-            {/* <div className="flex gap-6 mt-4 md:mt-0">
-              <a
-                href="#"
-                className="text-slate-500 hover:text-green-500 transition-colors"
-              >
-                Privacy Policy
-              </a>
-              <a
-                href="#"
-                className="text-slate-500 hover:text-green-500 transition-colors"
-              >
-                Terms of Service
-              </a>
-              <a
-                href="#"
-                className="text-slate-500 hover:text-green-500 transition-colors"
-              >
-                Cookies
-              </a>
-            </div> */}
           </div>
         </div>
       </footer>

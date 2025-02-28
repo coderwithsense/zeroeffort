@@ -1,6 +1,7 @@
 - MAKE THE API ENDPOINTS (MF LOVABLE HAVE MADE A SERVER LOL)
 - UPDATE the home page, make it workable it looks good, remove the pricing section for launch
 - MADE a crazy theme of the dashboard 
+- REMOVE the GAP AT THE RIGHT, ANNOYING AND UGLY AT THE HOME PAGE
 
 - LAUNCH TOMORROW AT ANY COST
 
