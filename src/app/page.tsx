@@ -18,13 +18,11 @@ import {
   Twitter,
 } from "lucide-react";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 
 const Index = () => {
   const [email, setEmail] = useState("");
   const [playgroundPrompt, setPlaygroundPrompt] = useState("");
-  const router = useRouter();
 
   const handleWaitlistSignup = (e: { preventDefault: () => void }) => {
     e.preventDefault();

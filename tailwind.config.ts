@@ -1,7 +1,7 @@
 import type { Config } from "tailwindcss";
 
 export default {
-  // darkMode: ["class"],
+  darkMode: ["class", "[data-theme='dark']"],
   content: [
     "./pages/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
@@ -25,20 +25,20 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#9b87f5",
+          DEFAULT: "#20c997",
           foreground: "#ffffff",
         },
         secondary: {
-          DEFAULT: "#1EAEDB",
+          DEFAULT: "#666666",
           foreground: "#ffffff",
         },
         muted: {
-          DEFAULT: "#F1F0FB",
+          DEFAULT: "#f5f5f5",
           foreground: "#666666",
         },
         accent: {
-          DEFAULT: "#FFE29F",
-          foreground: "#222222",
+          DEFAULT: "#0ca678",
+          foreground: "#ffffff",
         },
       },
       keyframes: {
@@ -57,12 +57,27 @@ export default {
         shimmer: {
           "100%": { transform: "translateX(100%)" },
         },
+        blob: {
+          "0%": {
+            transform: "translate(0px, 0px) scale(1)",
+          },
+          "33%": {
+            transform: "translate(30px, -50px) scale(1.1)",
+          },
+          "66%": {
+            transform: "translate(-20px, 20px) scale(0.9)",
+          },
+          "100%": {
+            transform: "translate(0px, 0px) scale(1)",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         float: "float 6s ease-in-out infinite",
         shimmer: "shimmer 2s infinite",
+        blob: "blob 7s infinite",
       },
     },
   },
