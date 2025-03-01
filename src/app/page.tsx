@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -19,27 +20,60 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
+import { useWaitlistStore } from "@/lib/stores/useWaitlistStore";
+import { usePlaygroundStore } from "@/lib/stores/usePlaygroundStore";
 
 const Index = () => {
-  const [email, setEmail] = useState("");
-  const [playgroundPrompt, setPlaygroundPrompt] = useState("");
+  const router = useRouter();
+  const { isSignedIn, user } = useUser();
 
-  const handleWaitlistSignup = (e: { preventDefault: () => void }) => {
+  // Waitlist store
+  const {
+    email: waitlistEmail,
+    setEmail: setWaitlistEmail,
+    submitEmail,
+    isSubmitting: isSubmittingWaitlist,
+  } = useWaitlistStore();
+
+  // Playground store
+  const {
+    prompt: playgroundPrompt,
+    setPrompt: setPlaygroundPrompt,
+    submitPrompt,
+    isSubmitting: isSubmittingPrompt,
+  } = usePlaygroundStore();
+
+  const handleWaitlistSignup = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    if (email) {
+    if (!waitlistEmail) return;
+
+    try {
+      await submitEmail(waitlistEmail);
       toast(
         "You've been added to our waitlist. We'll notify you when we launch!"
       );
-      setEmail("");
+    } catch (error) {
+      toast.error(
+        "There was an error adding you to the waitlist. Please try again."
+      );
     }
   };
 
-  const handleGenerate = () => {
-    if (playgroundPrompt) {
-      toast(
-        "We're creating your personalized productivity plan. Check back in a moment!"
-      );
-      setPlaygroundPrompt("");
+  const handleGenerate = async () => {
+    if (!playgroundPrompt) return;
+
+    try {
+      await submitPrompt(playgroundPrompt, user?.id);
+
+      if (isSignedIn) {
+        toast(
+          "We're creating your personalized productivity plan. Check back in a moment!"
+        );
+      } else {
+        router.push("/sign-up");
+      }
+    } catch (error) {
+      toast.error("There was an error. Please try again.");
     }
   };
 
@@ -92,8 +126,8 @@ const Index = () => {
               <Input
                 type="email"
                 placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={waitlistEmail}
+                onChange={(e) => setWaitlistEmail(e.target.value)}
                 className="h-12 shadow-lg rounded-xl border-white/30 focus:border-green-500"
                 required
               />
@@ -101,6 +135,7 @@ const Index = () => {
                 type="submit"
                 size="lg"
                 className="h-12 gradient-button rounded-xl shadow-lg"
+                disabled={isSubmittingWaitlist}
               >
                 Join Waitlist
                 <ChevronRight className="ml-2 h-4 w-4" />
@@ -117,7 +152,7 @@ const Index = () => {
         </div>
       </section>
 
-      {/* How It Works Section - Added based on feedback */}
+      {/* How It Works Section - Added based on feedback
       <section className="py-16 relative z-10">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12 hero-gradient-text">
@@ -159,35 +194,133 @@ const Index = () => {
             </div>
           </div>
         </div>
+      </section> */}
+      {/* How It Works Section */}
+      <section className="py-20 relative z-10">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col items-center mb-16">
+            <h2 className="text-3xl font-bold hero-gradient-text mb-4">
+              How ZeroEffort Works
+            </h2>
+            <div className="w-16 h-1 glassmorphism rounded-full"></div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-5xl mx-auto relative">
+            {/* Connection line for desktop
+            <div className="hidden md:block absolute top-24 left-[calc(16.66%+1rem)] right-[calc(16.66%+1rem)] h-0.5 bg-gradient-to-r from-primary/40 via-secondary/40 to-primary/40"></div> */}
+
+            {/* Step 1 */}
+            <div className="flex flex-col items-center group">
+              <div className="relative mb-8">
+                <div className="w-16 h-16 flex items-center justify-center bg-green-100 rounded-full border border-primary/20 group-hover:bg-primary/20 transition-all z-10">
+                  <span className="font-bold text-primary text-xl">1</span>
+                </div>
+                <div className="absolute inset-0 bg-primary/5 rounded-full blur-xl opacity-60 group-hover:opacity-100 transition-all"></div>
+              </div>
+
+              <h3 className="font-semibold text-lg mb-3 text-center text-slate-600">
+                Describe Your Task or Goal
+              </h3>
+              <p className="text-muted-foreground text-center">
+                Simply tell ZeroEffort what you need to accomplish in plain
+                text.
+              </p>
+            </div>
+
+            {/* Step 2 */}
+            <div className="flex flex-col items-center group">
+              <div className="relative mb-8">
+                <div className="w-16 h-16 flex items-center justify-center bg-blue-100 rounded-full border border-primary/20 group-hover:bg-primary/20 transition-all z-10">
+                  <span className="font-bold text-primary text-xl">2</span>
+                </div>
+                <div className="absolute inset-0 bg-primary/5 rounded-full blur-xl opacity-60 group-hover:opacity-100 transition-all"></div>
+              </div>
+
+              <h3 className="font-semibold text-lg mb-3 text-center text-slate-600">
+                AI Creates Your Plan
+              </h3>
+              <p className="text-muted-foreground text-center">
+                Our AI analyzes your needs and generates a tailored productivity
+                plan.
+              </p>
+            </div>
+
+            {/* Step 3 */}
+            <div className="flex flex-col items-center group">
+              <div className="relative mb-8">
+                <div className="w-16 h-16 flex items-center justify-center bg-purple-100 rounded-full border border-primary/20 group-hover:bg-primary/20 transition-all z-10">
+                  <span className="font-bold text-primary text-xl ">3</span>
+                </div>
+                <div className="absolute inset-0 bg-primary/5 rounded-full blur-xl opacity-60 group-hover:opacity-100 transition-all"></div>
+              </div>
+
+              <h3 className="font-semibold text-lg mb-3 text-center text-slate-600">
+                Execute & Track Progress
+              </h3>
+              <p className="text-muted-foreground text-center">
+                Follow your plan with reminders and adaptive adjustments as you
+                go.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex justify-center mt-16">
+            <button
+              className="px-6 py-3 bg-primary gradient-button rounded-lg font-medium hover:bg-primary/90 transition-colors"
+              onClick={() => router.push("#playground")}
+            >
+              Get Started
+            </button>
+          </div>
+        </div>
       </section>
 
       {/* Icon Grid Section */}
-      <section className="py-10 relative z-10">
+      <section className="py-12 relative z-10 bg-gradient-to-b from-gray-50 to-white">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
-            <div className="flex flex-col items-center text-center hover-lift">
-              <div className="w-16 h-16 flex items-center justify-center glassmorphism rounded-2xl mb-4 shadow-lg border border-white/30">
-                <Zap className="h-8 w-8 text-green-500" />
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
+            <div className="group transition-all duration-300 transform hover:-translate-y-2">
+              <div className="flex flex-col items-center">
+                <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center shadow-md mb-4 ring-2 ring-green-100 group-hover:ring-green-300 transition-all duration-300">
+                  <Zap className="h-8 w-8 text-green-500" />
+                </div>
+                <p className="font-medium text-slate-600 group-hover:text-green-600 transition-colors duration-300">
+                  Smart Planning
+                </p>
               </div>
-              <p className="text-sm text-slate-600">Smart Planning</p>
             </div>
-            <div className="flex flex-col items-center text-center hover-lift">
-              <div className="w-16 h-16 flex items-center justify-center glassmorphism rounded-2xl mb-4 shadow-lg border border-white/30">
-                <Brain className="h-8 w-8 text-blue-500" />
+
+            <div className="group transition-all duration-300 transform hover:-translate-y-2">
+              <div className="flex flex-col items-center">
+                <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center shadow-md mb-4 ring-2 ring-blue-100 group-hover:ring-blue-300 transition-all duration-300">
+                  <Brain className="h-8 w-8 text-blue-500" />
+                </div>
+                <p className="font-medium text-slate-600 group-hover:text-blue-600 transition-colors duration-300">
+                  AI-Powered
+                </p>
               </div>
-              <p className="text-sm text-slate-600">AI-Powered</p>
             </div>
-            <div className="flex flex-col items-center text-center hover-lift">
-              <div className="w-16 h-16 flex items-center justify-center glassmorphism rounded-2xl mb-4 shadow-lg border border-white/30">
-                <Clock className="h-8 w-8 text-purple-500" />
+
+            <div className="group transition-all duration-300 transform hover:-translate-y-2">
+              <div className="flex flex-col items-center">
+                <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center shadow-md mb-4 ring-2 ring-purple-100 group-hover:ring-purple-300 transition-all duration-300">
+                  <Clock className="h-8 w-8 text-purple-500" />
+                </div>
+                <p className="font-medium text-slate-600 group-hover:text-purple-600 transition-colors duration-300">
+                  Time Saving
+                </p>
               </div>
-              <p className="text-sm text-slate-600">Time Saving</p>
             </div>
-            <div className="flex flex-col items-center text-center hover-lift">
-              <div className="w-16 h-16 flex items-center justify-center glassmorphism rounded-2xl mb-4 shadow-lg border border-white/30">
-                <MousePointerClick className="h-8 w-8 text-indigo-500" />
+
+            <div className="group transition-all duration-300 transform hover:-translate-y-2">
+              <div className="flex flex-col items-center">
+                <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center shadow-md mb-4 ring-2 ring-indigo-100 group-hover:ring-indigo-300 transition-all duration-300">
+                  <MousePointerClick className="h-8 w-8 text-indigo-500" />
+                </div>
+                <p className="font-medium text-slate-600 group-hover:text-indigo-600 transition-colors duration-300">
+                  One-Click Setup
+                </p>
               </div>
-              <p className="text-sm text-slate-600">One-Click Setup</p>
             </div>
           </div>
         </div>
@@ -277,6 +410,7 @@ const Index = () => {
                 <Button
                   onClick={handleGenerate}
                   className="h-14 px-8 gradient-button rounded-xl shadow-md whitespace-nowrap font-medium"
+                  disabled={isSubmittingPrompt}
                 >
                   Generate
                 </Button>
@@ -451,11 +585,14 @@ const Index = () => {
               <Button
                 variant="outline"
                 className="w-full hover:border-green-500 hover:text-green-500 rounded-xl border-white/30 py-3 font-medium"
+                onClick={() => router.push("#playground")}
               >
                 Get Started
               </Button>
             </div>
 
+            {/* Original Pro Plan card commented out for later use */}
+            {/*
             <div className="bg-gradient-to-br from-white/90 to-white/60 backdrop-blur-md p-10 hover:translate-y-[-4px] transition-all duration-300 rounded-2xl shadow-xl relative overflow-hidden">
               <div className="absolute inset-0 border-2 border-green-500 rounded-2xl"></div>
               <div className="absolute -top-2 -left-2 w-full h-full bg-gradient-to-br from-green-50/20 to-blue-50/20 rounded-2xl -z-10"></div>
@@ -506,6 +643,14 @@ const Index = () => {
               <Button className="w-full bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white rounded-xl shadow-lg py-3 font-medium border-0">
                 Get Pro Access
               </Button>
+            </div>
+            */}
+
+            {/* New placeholder card */}
+            <div className="bg-gradient-to-br from-white/90 to-white/60 backdrop-blur-md p-10 flex items-center justify-center rounded-2xl shadow-xl border border-white/30">
+              <span className="text-2xl font-bold">
+                Coming Soon with Unlimited Access
+              </span>
             </div>
           </div>
         </div>

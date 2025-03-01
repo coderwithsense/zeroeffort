@@ -1,7 +1,15 @@
 import prisma from "@/lib/prisma";
+import { auth } from "@clerk/nextjs/server";
 
 export async function POST(request: Request) {
   try {
+    const { userId } = await auth();
+    if (!userId) {
+      return new Response(
+        JSON.stringify({ success: false, message: 'Unauthorized' }),
+        { status: 401, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
     const { email } = await request.json();
 
     if (!email) {
@@ -35,9 +43,9 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Error in waitlist API:', error);
     return new Response(
-      JSON.stringify({ 
-        success: false, 
-        message: 'An error occurred while processing your request' 
+      JSON.stringify({
+        success: false,
+        message: 'An error occurred while processing your request'
       }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );

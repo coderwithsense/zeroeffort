@@ -1,8 +1,18 @@
 import prisma from "@/lib/prisma";
+import { auth } from "@clerk/nextjs/server";
 
 export async function POST(request: Request) {
   try {
-    const { userId, email } = await request.json();
+    const { email } = await request.json();
+
+    const { userId } = await auth();
+    if (!userId) {
+      return new Response(
+        JSON.stringify({ success: false, message: 'Unauthorized' }),
+        { status: 401, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
 
     if (!userId || !email) {
       return new Response(
@@ -13,7 +23,7 @@ export async function POST(request: Request) {
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
-      where: { id: userId },
+      where: { clerkId: userId },
     });
 
     if (existingUser) {
@@ -26,7 +36,7 @@ export async function POST(request: Request) {
       // Create a new user
       await prisma.user.create({
         data: {
-          id: userId,
+          clerkId: userId,
           email,
         },
       });
@@ -39,9 +49,9 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Error in user API:', error);
     return new Response(
-      JSON.stringify({ 
-        success: false, 
-        message: 'An error occurred while processing your request' 
+      JSON.stringify({
+        success: false,
+        message: 'An error occurred while processing your request'
       }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
