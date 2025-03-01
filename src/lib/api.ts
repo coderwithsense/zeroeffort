@@ -39,7 +39,7 @@ export const saveUserData = async (userId: string, email: string) => {
 
     if (!existingUser) {
       await prisma.user.create({
-        data: { id: userId, email }
+        data: { clerkId: userId, email }
       });
     }
     

@@ -10,7 +10,6 @@ import {
   CalendarDays,
   ChevronRight,
   Check,
-  Star,
   Zap,
   MousePointerClick,
   Search,
@@ -53,6 +52,7 @@ const Index = () => {
         "You've been added to our waitlist. We'll notify you when we launch!"
       );
     } catch (error) {
+      console.log(error)
       toast.error(
         "There was an error adding you to the waitlist. Please try again."
       );
@@ -73,6 +73,7 @@ const Index = () => {
         router.push("/sign-up");
       }
     } catch (error) {
+      console.log(error)
       toast.error("There was an error. Please try again.");
     }
   };

@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Sparkles, ArrowRight, Github, Check } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -202,7 +202,7 @@ const ComingSoon = () => {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
           >
-            <p>Thanks! We'll notify you when we launch.</p>
+            <p>Thanks! We will notify you when we launch.</p>
           </motion.div>
         )}
       </motion.div>
