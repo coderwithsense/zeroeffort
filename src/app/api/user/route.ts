@@ -13,7 +13,6 @@ export async function POST(request: Request) {
       );
     }
 
-
     if (!userId || !email) {
       return new Response(
         JSON.stringify({ success: false, message: 'User ID and email are required' }),
