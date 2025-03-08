@@ -1,12 +1,9 @@
-import ComingSoon from "@/components/ComingSoon";
-import React from "react";
+import React from 'react'
 
-const Dashboard = () => {
+const page = () => {
   return (
-    <div>
-      Dashboard
-    </div>
-  );
-};
+    <div>page</div>
+  )
+}
 
-export default Dashboard;
+export default page
