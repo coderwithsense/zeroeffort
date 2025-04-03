@@ -32,4 +32,44 @@ model User {
   email     String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  todoLists TodoList[] @relation("UserTodoLists")
+  Chat Chat[]
+}
+
+model Chat {
+  id String @id @default(cuid()) @map("_id")
+  title String
+  createdAt DateTime @default(now())
+  userId String
+  user User @relation(fields: [userId], references: [id])
+  messages Message[] @relation("ChatMessages")
+}
+
+model Message {
+  id String @id @default(cuid()) @map("_id")
+  content String
+  createdAt DateTime @default(now())
+  chatId String
+  chat Chat @relation("ChatMessages", fields: [chatId], references: [id])
+}
+
+model Todo {
+  id String @id @default(cuid()) @map("_id")
+  title String
+  completed Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  todoListId String
+  todoList TodoList @relation(fields: [todoListId], references: [id])
+
+}
+
+model TodoList {
+  id String @id @default(cuid()) @map("_id")
+  title String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId String
+  user User @relation("UserTodoLists", fields: [userId], references: [id])
+  Todo Todo[]
 }
