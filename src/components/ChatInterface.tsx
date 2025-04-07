@@ -9,6 +9,7 @@ import { PlusIcon, SendIcon } from "lucide-react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import useSWR from "swr";
+import { generateUniqueId } from "@/lib/utils";
 
 interface Message {
   id: string;
@@ -85,7 +86,7 @@ const ChatInterface = () => {
 
     try {
       const res = await trigger({
-        chatId: chatId || "new-chat",
+        chatId: chatId || generateUniqueId(),
         prompt: currentPrompt,
       });
 
