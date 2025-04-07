@@ -1,4 +1,4 @@
-import { createChat, getChatById, getMessagesByChatId } from "@/lib/api";
+import { createChat, getChatById, getChats, getMessagesByChatId } from "@/lib/api";
 import prisma from "@/lib/prisma";
 import { askAI } from "@/services/chat.service";
 import { auth } from "@clerk/nextjs/server";
@@ -55,30 +55,22 @@ export async function GET(request: NextRequest) {
 
         const { searchParams } = new URL(request.url);
         const chatId = searchParams.get("chatId");
-
-        if (!chatId) {
+        if (chatId) {
+            const messages = await getMessagesByChatId(chatId);
             return NextResponse.json({
-                success: false,
-                message: "chatId is required",
-            }, { status: 400 });
+                success: true,
+                messages,
+            }, { status: 200 });
         }
 
-        const messages = await getMessagesByChatId(chatId);
-
-        if (!messages || messages.length === 0) {
-            return NextResponse.json({
-                success: false,
-                message: "No messages found",
-            }, { status: 404 });
-        }
+        const chats = await getChats(userId);
 
         return NextResponse.json({
             success: true,
-            messages,
+            chats,
         }, { status: 200 });
-
     } catch (error) {
-        console.error("Error in chat API:", error);
+        console.error("Error in chats API:", error);
         return NextResponse.json({
             success: false,
             message: "An error occurred while processing your request",

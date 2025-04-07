@@ -9,6 +9,20 @@ interface CreateMessageParams {
   prompt?: string;
 }
 
+export async function getChats(userId: string) {
+  return prisma.chat.findMany({
+    where: { userId },
+    orderBy: { createdAt: "desc" },
+    select: {
+      id: true,
+      chatId: true,
+      title: true,
+      createdAt: true
+    }
+  });
+
+}
+
 export const getChatById = async (chatId: string) => {
   try {
     const chat = await prisma.chat.findUnique({
@@ -83,6 +97,16 @@ export const getMessagesByChatId = async (chatId: string) => {
     console.error(`[MESSAGE_API_FETCH_ERROR]: ${error}`);
     throw error;
   }
+}
+
+export async function saveMessage(content: string, role: MessageRole, chatId: string) {
+  return prisma.message.create({
+    data: {
+      content,
+      role,
+      chatId,
+    },
+  });
 }
 
 export const saveWaitlistEmail = async (email: string) => {

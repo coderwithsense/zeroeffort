@@ -4,6 +4,7 @@ interface AskAIRequestArgs {
   }
   
   interface AskAIResponse {
+    chatId: any;
     success: boolean;
     message: string;
   }

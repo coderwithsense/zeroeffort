@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import useSWRMutation from "swr/mutation";
 import { askAIRequest } from "@/hooks/useAskAI";
+import ChatInterface from "@/components/ChatInterface";
 
 const ComingSoon = () => {
   const [prompt, setPrompt] = useState("");
@@ -24,22 +25,25 @@ const handleSubmit = async () => {
 };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
-      <h1 className="text-4xl font-bold mb-4">Coming Soon</h1>
-      <p className="text-lg mb-8">
-        We're working hard to launch this feature!
-      </p>
-      <div className="flex items-center space-x-2">
-        <Input
-          placeholder="Enter your prompt"
-          className="w-64"
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-        />
-        <Button onClick={handleSubmit} disabled={isMutating}>
-          {isMutating ? "Asking..." : "Ask AI"}
-        </Button>
-      </div>
+    // <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
+    //   <h1 className="text-4xl font-bold mb-4">Coming Soon</h1>
+    //   <p className="text-lg mb-8">
+    //     We're working hard to launch this feature!
+    //   </p>
+    //   <div className="flex items-center space-x-2">
+    //     <Input
+    //       placeholder="Enter your prompt"
+    //       className="w-64"
+    //       value={prompt}
+    //       onChange={(e) => setPrompt(e.target.value)}
+    //     />
+    //     <Button onClick={handleSubmit} disabled={isMutating}>
+    //       {isMutating ? "Asking..." : "Ask AI"}
+    //     </Button>
+    //   </div>
+    // </div>
+    <div>
+      <ChatInterface />
     </div>
   );
 };
