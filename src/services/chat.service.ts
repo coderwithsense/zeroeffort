@@ -1,12 +1,31 @@
+import { createMessage } from "@/lib/api";
 import geminiModel from "@/lib/gemini";
 import { generateText } from "ai";
 
-const createMessage = (prompt: string, type: 'user' | 'assistant') => {
-    const message = "You are chatting with an AI assistant. Please ask your question.";
-    return {
-        content: prompt,
+const askAI = async (prompt: string, chatId: string) => {
+    try {
+        await createMessage({
+            chatId,
+            role: 'user',
+            prompt,
+        });
+
+        const message = "You are chatting with an AI assistant. Please ask your question.";
+
+        await createMessage({
+            chatId,
+            role: 'assistant',
+            content: message,
+        });
+
+        return message;
+    } catch (error) {
+        console.error(`[ASK_AI_ERROR]:`, error);
+        // Optional: return fallback or throw for upstream handling
+        throw new Error("Failed to process AI response.");
     }
-}
+};
+
 
 const createTitle = async (prompt: string) => {
     const result = await generateText({
@@ -17,4 +36,4 @@ const createTitle = async (prompt: string) => {
     return result.text;
 }
 
-export { createMessage, createTitle };
+export { askAI, createTitle };
