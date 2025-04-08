@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
             chat = await createChat(chatId, prompt, userId);
         }
 
-        const message = await askAI(prompt, chat?.chatId as string)
+        const message = await askAI(prompt, chat?.chatId as string, userId)
 
         return NextResponse.json({
             success: true,
@@ -40,6 +40,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
             success: false,
             message: 'An error occurred while processing your request',
+            chatId: 'chat'
         }, { status: 500 });
     }
 }

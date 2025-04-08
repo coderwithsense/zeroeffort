@@ -27,23 +27,24 @@ model PlaygroundPrompt {
 }
 
 model User {
-  id        String   @id @default(cuid()) @map("_id")
-  clerkId   String   @unique
-  email     String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        String     @id @default(cuid()) @map("_id")
+  clerkId   String     @unique
+  email     String     @unique
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
   todoLists TodoList[] @relation("UserTodoLists")
-  Chat Chat[]
+  todos     Todo[]     @relation("UserTodos")
+  Chat      Chat[]
 }
 
 model Chat {
-  id String @id @default(cuid()) @map("_id")
-  chatId String @unique
-  title String
-  createdAt DateTime @default(now())
-  userId String
-  user User @relation(fields: [userId], references: [id])
-  messages Message[] @relation("ChatMessages")
+  id        String    @id @default(cuid()) @map("_id")
+  chatId    String    @unique
+  title     String
+  createdAt DateTime  @default(now())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  messages  Message[] @relation("ChatMessages")
 }
 
 enum MessageRole {
@@ -51,32 +52,34 @@ enum MessageRole {
   user
   assistant
 }
+
 model Message {
-  id String @id @default(cuid()) @map("_id")
-  content String
-  role MessageRole
-  createdAt DateTime @default(now())
-  chatId String
-  chat Chat @relation("ChatMessages", fields: [chatId], references: [id])
+  id        String      @id @default(cuid()) @map("_id")
+  content   String
+  role      MessageRole
+  createdAt DateTime    @default(now())
+  chatId    String
+  chat      Chat        @relation("ChatMessages", fields: [chatId], references: [id])
 }
 
 model Todo {
-  id String @id @default(cuid()) @map("_id")
-  title String
-  completed Boolean @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  todoListId String
-  todoList TodoList @relation(fields: [todoListId], references: [id])
-
+  id         String   @id @default(cuid()) @map("_id")
+  title      String
+  completed  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  userId     String
+  user       User     @relation("UserTodos", fields: [userId], references: [id])
+  todoListId String @default("default")
+  todoList   TodoList @relation(fields: [todoListId], references: [id])
 }
 
 model TodoList {
-  id String @id @default(cuid()) @map("_id")
-  title String
+  id        String   @id @default(cuid()) @map("_id")
+  title     String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  userId String
-  user User @relation("UserTodoLists", fields: [userId], references: [id])
-  Todo Todo[]
+  userId    String
+  user      User     @relation("UserTodoLists", fields: [userId], references: [id])
+  Todo      Todo[]
 }

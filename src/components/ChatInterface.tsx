@@ -5,7 +5,13 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import useSWRMutation from "swr/mutation";
 import { askAIRequest } from "@/hooks/useAskAI";
-import { PlusIcon, SendIcon, MenuIcon, XIcon, ListTodoIcon } from "lucide-react";
+import {
+  PlusIcon,
+  SendIcon,
+  MenuIcon,
+  XIcon,
+  ListTodoIcon,
+} from "lucide-react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import useSWR from "swr";
@@ -18,13 +24,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import TodoModal from "./TodoModal";
 
 interface Message {
   id: string;
@@ -38,12 +38,6 @@ interface Chat {
   chatId: string;
   title: string;
   createdAt: string;
-}
-
-interface Todo {
-  id: string;
-  title: string;
-  completed: boolean;
 }
 
 const fetchMessages = async (url: string) => {
@@ -68,14 +62,6 @@ const ChatInterface = () => {
   const [prompt, setPrompt] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [todosOpen, setTodosOpen] = useState(false);
-
-  // Mock todos data - this would be replaced with an API call
-  const mockTodos: Todo[] = [
-    { id: "1", title: "Complete the sidebar component", completed: false },
-    { id: "2", title: "Add responsive design", completed: true },
-    { id: "3", title: "Implement todos modal", completed: false },
-  ];
 
   // Fetch chats for sidebar
   const { data: chats = [], error: chatsError } = useSWR<Chat[]>(
@@ -159,57 +145,17 @@ const ChatInterface = () => {
         </Button>
       </div>
 
-      {/* Todos Button */}
       <div className="fixed top-4 right-4 z-30">
-        <Dialog open={todosOpen} onOpenChange={setTodosOpen}>
-          <DialogTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon"
-              className="rounded-full bg-white shadow-md"
-            >
-              <ListTodoIcon size={18} />
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>Your Todos</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-2 max-h-96 overflow-y-auto py-4">
-              {mockTodos.map((todo) => (
-                <div 
-                  key={todo.id} 
-                  className="flex items-center gap-2 p-3 bg-white rounded-lg border"
-                >
-                  <input 
-                    type="checkbox" 
-                    checked={todo.completed} 
-                    className="h-4 w-4"
-                    readOnly
-                  />
-                  <span className={cn(
-                    "flex-1",
-                    todo.completed && "line-through text-gray-400"
-                  )}>
-                    {todo.title}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </DialogContent>
-        </Dialog>
+        <TodoModal />
       </div>
 
-      {/* Sidebar - Desktop (always visible) and Mobile (Sheet component) */}
-      {/* For Desktop */}
-      <div className={cn(
-        "hidden md:flex w-64 bg-gray-100 border-r border-gray-200 flex-col transition-all duration-300",
-      )}>
-        <SidebarContent 
-          chats={chats} 
-          chatsError={chatsError} 
-          chatId={chatId} 
-          handleNewChat={handleNewChat} 
+      {/* Sidebar - Desktop (always visible) */}
+      <div className="hidden md:flex w-64 bg-gray-100 border-r border-gray-200 flex-col transition-all duration-300">
+        <SidebarContent
+          chats={chats}
+          chatsError={chatsError}
+          chatId={chatId}
+          handleNewChat={handleNewChat}
         />
       </div>
 
@@ -219,11 +165,11 @@ const ChatInterface = () => {
           <SheetHeader className="px-4 py-2">
             <SheetTitle>Conversations</SheetTitle>
           </SheetHeader>
-          <SidebarContent 
-            chats={chats} 
-            chatsError={chatsError} 
-            chatId={chatId} 
-            handleNewChat={handleNewChat} 
+          <SidebarContent
+            chats={chats}
+            chatsError={chatsError}
+            chatId={chatId}
+            handleNewChat={handleNewChat}
           />
         </SheetContent>
       </Sheet>
@@ -284,16 +230,16 @@ const ChatInterface = () => {
 };
 
 // Extracted SidebarContent component for reuse between desktop and mobile
-const SidebarContent = ({ 
-  chats, 
-  chatsError, 
-  chatId, 
-  handleNewChat 
-}: { 
-  chats: Chat[], 
-  chatsError: any, 
-  chatId: string,
-  handleNewChat: () => void 
+const SidebarContent = ({
+  chats,
+  chatsError,
+  chatId,
+  handleNewChat,
+}: {
+  chats: Chat[];
+  chatsError: any;
+  chatId: string;
+  handleNewChat: () => void;
 }) => {
   return (
     <>

@@ -1,8 +1,10 @@
-import { createMessage } from "@/lib/api";
+import { createMessage, createTodos, fetchTodos } from "@/lib/api";
 import geminiModel from "@/lib/gemini";
-import { generateText } from "ai";
+import { generateText, tool } from "ai";
+import { addTodoSchema } from "./ai.tools";
+import { z } from "zod";
 
-const askAI = async (prompt: string, chatId: string) => {
+const askAI = async (prompt: string, chatId: string, userId: string) => {
     try {
         await createMessage({
             chatId,
@@ -10,7 +12,7 @@ const askAI = async (prompt: string, chatId: string) => {
             prompt,
         });
 
-        const message = await generateResponse(prompt);
+        const message = await generateResponse(prompt, userId);
 
         await createMessage({
             chatId,
@@ -21,12 +23,11 @@ const askAI = async (prompt: string, chatId: string) => {
         return message;
     } catch (error) {
         console.error(`[ASK_AI_ERROR]:`, error);
-        // Optional: return fallback or throw for upstream handling
         throw new Error("Failed to process AI response.");
     }
 };
 
-const generateResponse = async (prompt: string) => {
+const generateResponse = async (prompt: string, userId: string) => {
     try {
         const response = await generateText({
             model: geminiModel("gemini-2.0-flash-lite-preview-02-05"),
@@ -52,8 +53,33 @@ const generateResponse = async (prompt: string) => {
             - Planning 10–15 day Uttarakhand bike trip.
             
             Be precise. Don’t flatter. Don’t explain. Always stay within the word limit.`,
+            tools: {
+                addTodos: tool({
+                    description: "Add one or more todo items with optional priority, due date, or tags.",
+                    parameters: addTodoSchema,
+                    execute: async ({ todos }) => {
+                        console.log("Received todos:", todos);
+
+                        const formattedTodos = todos.map((todo) => ({
+                            title: todo.title,
+                            userId,
+                        }));
+
+                        await createTodos(formattedTodos);
+
+                        return {
+                            success: true,
+                            message: `${todos.length} todo(s) added successfully!`
+                        };
+                    }
+                })
+            },
             prompt: prompt,
+            onStepFinish: ({ usage }) => {
+                console.log(`Usage after total: ${usage.completionTokens}`);
+            },
             temperature: 0.5,
+            maxSteps: 10
         })
         return response.text;
     } catch (error) {

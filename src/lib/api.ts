@@ -9,6 +9,14 @@ interface CreateMessageParams {
   prompt?: string;
 }
 
+export interface Todo {
+  id: string;
+  title: string;
+  completed: boolean;
+  userId: string;
+  todoListId: string;
+}
+
 export async function getChats(userId: string) {
   return prisma.chat.findMany({
     where: { userId },
@@ -106,6 +114,48 @@ export async function saveMessage(content: string, role: MessageRole, chatId: st
       role,
       chatId,
     },
+  });
+}
+
+export async function fetchTodos(userId: string) {
+  const todos = await prisma.todo.findMany({
+    where: {
+      userId: userId
+    },
+    orderBy: { createdAt: "desc" },
+  });
+  return todos;
+}
+
+export async function createTodos(
+  todos: { title: string; userId: string; todoListId?: string }[]
+) {
+  try {
+    const createdTodos = await prisma.$transaction(
+      todos.map((todo) =>
+        prisma.todo.create({
+          data: {
+            title: todo.title,
+            userId: todo.userId,
+            todoListId: todo.todoListId,
+          },
+        })
+      )
+    );
+    return createdTodos;
+  } catch (error) {
+    console.error(`[TODO_API_CREATE_ERROR]: ${error}`);
+    throw error;
+  }
+}
+
+export async function toggleTodoCompletion(id: string) {
+  const todo = await prisma.todo.findUnique({ where: { id } });
+  if (!todo) throw new Error("Todo not found");
+
+  return prisma.todo.update({
+    where: { id },
+    data: { completed: !todo.completed },
   });
 }
 
