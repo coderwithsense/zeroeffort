@@ -1,5 +1,3 @@
-import { createTodo } from "@/lib/api";
-import { tool } from "ai";
 import { z } from "zod";
 
 // Define the Zod schema for a single todo item
