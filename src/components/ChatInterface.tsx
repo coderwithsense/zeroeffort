@@ -11,6 +11,8 @@ import {
   MenuIcon,
   XIcon,
   ListTodoIcon,
+  MessageSquareIcon,
+  TrashIcon,
 } from "lucide-react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
@@ -40,11 +42,129 @@ interface Chat {
   createdAt: string;
 }
 
+interface SuggestionProps {
+  text: string;
+  onClick: (text: string) => void;
+}
+
 const fetchMessages = async (url: string) => {
   const res = await fetch(url);
   if (!res.ok) throw new Error("Failed to fetch messages");
   const data = await res.json();
   return data.messages;
+};
+
+// Extracted to its own separate component
+const Sidebar = ({
+  chats,
+  chatsError,
+  currentChatId,
+  onNewChat,
+  isMobile = false,
+  onChatSelect = () => {},
+}: {
+  chats: Chat[];
+  chatsError: any;
+  currentChatId: string;
+  onNewChat: () => void;
+  isMobile?: boolean;
+  onChatSelect?: () => void;
+}) => {
+  const [hoveredChatId, setHoveredChatId] = useState<string | null>(null);
+
+  const handleDeleteChat = async (chatId: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ chatId }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to delete chat');
+      }
+      
+      toast.success('Chat deleted successfully');
+      
+      // Force refetch of chats
+      window.location.href = '/chat';
+    } catch (error) {
+      toast.error('Failed to delete chat');
+      console.error(error);
+    }
+  };
+
+  return (
+    <div className="flex flex-col h-full bg-gray-100 border-r border-gray-200">
+      <div className="p-4">
+        <Button
+          className="w-full flex items-center justify-center gap-2 hover:bg-gray-200"
+          variant="outline"
+          onClick={onNewChat}
+        >
+          <PlusIcon size={16} />
+          New Chat
+        </Button>
+      </div>
+
+      <div className="flex-1 overflow-y-auto">
+        {chatsError ? (
+          <div className="p-4 text-red-500 text-sm">Failed to load chats</div>
+        ) : (
+          <div className="space-y-1 p-2">
+            {chats.map((chat) => (
+              <Link 
+                href={`/chat/${chat.chatId}`} 
+                key={chat.id}
+                onClick={() => isMobile && onChatSelect()}
+              >
+                <div
+                  className={cn(
+                    "p-2 rounded-md text-sm cursor-pointer hover:bg-gray-200 flex justify-between items-center group relative",
+                    currentChatId === chat.chatId ? "bg-gray-200 font-medium" : ""
+                  )}
+                  onMouseEnter={() => setHoveredChatId(chat.chatId)}
+                  onMouseLeave={() => setHoveredChatId(null)}
+                >
+                  <div className="flex items-center space-x-2 overflow-hidden">
+                    <MessageSquareIcon size={14} className="flex-shrink-0 text-gray-500" />
+                    <span className="truncate">{chat.title}</span>
+                  </div>
+                  
+                  {hoveredChatId === chat.chatId && (
+                    <button
+                      onClick={(e) => handleDeleteChat(chat.chatId, e)}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-gray-300 rounded-full"
+                      aria-label="Delete chat"
+                    >
+                      <TrashIcon size={14} className="text-gray-500" />
+                    </button>
+                  )}
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Suggestion component for new chats
+const SuggestionButton: React.FC<SuggestionProps> = ({ text, onClick }) => {
+  return (
+    <button
+      onClick={() => onClick(text)}
+      className="p-3 bg-white rounded-lg shadow-sm border border-gray-200 text-left hover:bg-gray-50 transition-colors text-sm"
+    >
+      {text}
+    </button>
+  );
 };
 
 const fetchChats = async () => {
@@ -62,6 +182,14 @@ const ChatInterface = () => {
   const [prompt, setPrompt] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Suggestions for new chats
+  const suggestions = [
+    "Help me create a weekly meal plan",
+    "Explain quantum computing in simple terms",
+    "Draft an email to request time off work",
+    "Write a short story about a space explorer"
+  ];
 
   // Fetch chats for sidebar
   const { data: chats = [], error: chatsError } = useSWR<Chat[]>(
@@ -131,6 +259,10 @@ const ChatInterface = () => {
     setSidebarOpen(false); // Close sidebar on mobile after selecting
   };
 
+  const handleSuggestionClick = (text: string) => {
+    setPrompt(text);
+  };
+
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Mobile Sidebar Toggle */}
@@ -150,12 +282,12 @@ const ChatInterface = () => {
       </div>
 
       {/* Sidebar - Desktop (always visible) */}
-      <div className="hidden md:flex w-64 bg-gray-100 border-r border-gray-200 flex-col transition-all duration-300">
-        <SidebarContent
+      <div className="hidden md:flex w-64 flex-col transition-all duration-300">
+        <Sidebar
           chats={chats}
           chatsError={chatsError}
-          chatId={chatId}
-          handleNewChat={handleNewChat}
+          currentChatId={chatId}
+          onNewChat={handleNewChat}
         />
       </div>
 
@@ -165,12 +297,16 @@ const ChatInterface = () => {
           <SheetHeader className="px-4 py-2">
             <SheetTitle>Conversations</SheetTitle>
           </SheetHeader>
-          <SidebarContent
-            chats={chats}
-            chatsError={chatsError}
-            chatId={chatId}
-            handleNewChat={handleNewChat}
-          />
+          <div className="h-[calc(100%-60px)]">
+            <Sidebar
+              chats={chats}
+              chatsError={chatsError}
+              currentChatId={chatId}
+              onNewChat={handleNewChat}
+              isMobile={true}
+              onChatSelect={() => setSidebarOpen(false)}
+            />
+          </div>
         </SheetContent>
       </Sheet>
 
@@ -184,28 +320,39 @@ const ChatInterface = () => {
             messages.map((message) => (
               <div
                 key={message.id}
-                className={`p-4 rounded-lg max-w-3xl ${
+                className={cn(
+                  "p-4 rounded-lg max-w-3xl",
                   message.role === "user"
-                    ? "bg-blue-100 ml-auto"
-                    : "bg-gray-100"
-                }`}
+                    ? "bg-blue-100 ml-auto text-blue-900"
+                    : "bg-white border border-gray-100 shadow-sm"
+                )}
               >
                 {message.content}
               </div>
             ))
           ) : (
-            <div className="flex items-center justify-center h-full text-gray-400">
-              Start a new conversation
+            <div className="flex flex-col items-center justify-center h-full">
+              <div className="text-2xl font-semibold text-gray-700 mb-6">How can I help you today?</div>
+              
+              <div className="max-w-lg w-full grid grid-cols-1 md:grid-cols-2 gap-3">
+                {suggestions.map((suggestion, index) => (
+                  <SuggestionButton 
+                    key={index} 
+                    text={suggestion}
+                    onClick={handleSuggestionClick}
+                  />
+                ))}
+              </div>
             </div>
           )}
         </div>
 
         {/* Input Area */}
-        <div className="border-t border-gray-200 p-4">
-          <div className="flex items-center space-x-2">
+        <div className="border-t border-gray-200 p-4 bg-white">
+          <div className="flex items-center space-x-2 max-w-4xl mx-auto">
             <Input
               placeholder="Type your message..."
-              className="flex-1"
+              className="flex-1 border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               onKeyDown={(e) => {
@@ -219,6 +366,7 @@ const ChatInterface = () => {
               onClick={handleSubmit}
               disabled={isMutating || !prompt.trim()}
               size="icon"
+              className="bg-blue-600 hover:bg-blue-700 text-white"
             >
               <SendIcon size={18} />
             </Button>
@@ -226,55 +374,6 @@ const ChatInterface = () => {
         </div>
       </div>
     </div>
-  );
-};
-
-// Extracted SidebarContent component for reuse between desktop and mobile
-const SidebarContent = ({
-  chats,
-  chatsError,
-  chatId,
-  handleNewChat,
-}: {
-  chats: Chat[];
-  chatsError: any;
-  chatId: string;
-  handleNewChat: () => void;
-}) => {
-  return (
-    <>
-      <div className="p-4">
-        <Button
-          className="w-full flex items-center justify-center gap-2"
-          variant="outline"
-          onClick={handleNewChat}
-        >
-          <PlusIcon size={16} />
-          New Chat
-        </Button>
-      </div>
-
-      <div className="flex-1 overflow-y-auto">
-        {chatsError ? (
-          <div className="p-4 text-red-500 text-sm">Failed to load chats</div>
-        ) : (
-          <div className="space-y-1 p-2">
-            {chats.map((chat) => (
-              <Link href={`/chat/${chat.chatId}`} key={chat.id}>
-                <div
-                  className={cn(
-                    "p-2 rounded-md text-sm cursor-pointer hover:bg-gray-200",
-                    chatId === chat.chatId ? "bg-gray-200 font-medium" : ""
-                  )}
-                >
-                  {chat.title}
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
-      </div>
-    </>
   );
 };
 
