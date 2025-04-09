@@ -71,30 +71,72 @@ const Sidebar = ({
   onChatSelect?: () => void;
 }) => {
   const [hoveredChatId, setHoveredChatId] = useState<string | null>(null);
+  const router = useRouter();
+
+  const deleteChatRequest = async (
+    url: string,
+    { arg }: { arg: { chatId: string } }
+  ) => {
+    const response = await fetch(url, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(arg),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to delete chat");
+    }
+
+    return response.json();
+  };
+
+  const { trigger: deleteChatTrigger, isMutating: isDeleting } = useSWRMutation(
+    "/api/chat",
+    deleteChatRequest
+  );
+
+  // const handleDeleteChat = async (chatId: string, e: React.MouseEvent) => {
+  //   e.preventDefault();
+  //   e.stopPropagation();
+
+  //   try {
+  //     const response = await fetch("/api/chat", {
+  //       method: "DELETE",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({ chatId }),
+  //     });
+
+  //     if (!response.ok) {
+  //       throw new Error("Failed to delete chat");
+  //     }
+
+  //     toast.success("Chat deleted successfully");
+
+  //     // Force refetch of chats
+  //     window.location.href = "/chat";
+  //   } catch (error) {
+  //     toast.error("Failed to delete chat");
+  //     console.error(error);
+  //   }
+  // };
 
   const handleDeleteChat = async (chatId: string, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     try {
-      const response = await fetch('/api/chat', {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ chatId }),
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to delete chat');
-      }
-      
-      toast.success('Chat deleted successfully');
-      
-      // Force refetch of chats
-      window.location.href = '/chat';
-    } catch (error) {
-      toast.error('Failed to delete chat');
+      await deleteChatTrigger({ chatId });
+
+      toast.success("Chat deleted successfully");
+
+      // Use router.replace or mutate SWR data to refresh without full reload
+      router.replace("/chat"); // if already on that page
+    } catch (error: any) {
+      toast.error("Failed to delete chat");
       console.error(error);
     }
   };
@@ -118,24 +160,29 @@ const Sidebar = ({
         ) : (
           <div className="space-y-1 p-2">
             {chats.map((chat) => (
-              <Link 
-                href={`/chat/${chat.chatId}`} 
+              <Link
+                href={`/chat/${chat.chatId}`}
                 key={chat.id}
                 onClick={() => isMobile && onChatSelect()}
               >
                 <div
                   className={cn(
                     "p-2 rounded-md text-sm cursor-pointer hover:bg-gray-200 flex justify-between items-center group relative",
-                    currentChatId === chat.chatId ? "bg-gray-200 font-medium" : ""
+                    currentChatId === chat.chatId
+                      ? "bg-gray-200 font-medium"
+                      : ""
                   )}
                   onMouseEnter={() => setHoveredChatId(chat.chatId)}
                   onMouseLeave={() => setHoveredChatId(null)}
                 >
                   <div className="flex items-center space-x-2 overflow-hidden">
-                    <MessageSquareIcon size={14} className="flex-shrink-0 text-gray-500" />
+                    <MessageSquareIcon
+                      size={14}
+                      className="flex-shrink-0 text-gray-500"
+                    />
                     <span className="truncate">{chat.title}</span>
                   </div>
-                  
+
                   {hoveredChatId === chat.chatId && (
                     <button
                       onClick={(e) => handleDeleteChat(chat.chatId, e)}
@@ -188,7 +235,7 @@ const ChatInterface = () => {
     "Help me create a weekly meal plan",
     "Explain quantum computing in simple terms",
     "Draft an email to request time off work",
-    "Write a short story about a space explorer"
+    "Write a short story about a space explorer",
   ];
 
   // Fetch chats for sidebar
@@ -332,12 +379,14 @@ const ChatInterface = () => {
             ))
           ) : (
             <div className="flex flex-col items-center justify-center h-full">
-              <div className="text-2xl font-semibold text-gray-700 mb-6">How can I help you today?</div>
-              
+              <div className="text-2xl font-semibold text-gray-700 mb-6">
+                How can I help you today?
+              </div>
+
               <div className="max-w-lg w-full grid grid-cols-1 md:grid-cols-2 gap-3">
                 {suggestions.map((suggestion, index) => (
-                  <SuggestionButton 
-                    key={index} 
+                  <SuggestionButton
+                    key={index}
                     text={suggestion}
                     onClick={handleSuggestionClick}
                   />
