@@ -62,6 +62,36 @@ export const createChat = async (chatId: string, prompt: string, userId: string)
   }
 }
 
+export const deleteChatAndMessages = async (chatId: string) => {
+  try {
+    const chat = await prisma.chat.findUnique({
+      where: {
+        chatId: chatId
+      }
+    })
+    if (!chat) {
+      throw new Error(`Chat not found with ID: ${chatId}`);
+    }
+
+    await prisma.message.deleteMany({
+      where: {
+        chatId: chatId
+      }
+    });
+
+    await prisma.chat.delete({
+      where: {
+        chatId: chatId
+      }
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error(`[CHAT_API_DELETE_ERROR]: ${error}`);
+    throw error;
+  }
+}
+
 export const createMessage = async ({
   chatId,
   role,

@@ -1,4 +1,4 @@
-import { createChat, getChatById, getChats, getMessagesByChatId } from "@/lib/api";
+import { createChat, deleteChatAndMessages, getChatById, getChats, getMessagesByChatId } from "@/lib/api";
 import prisma from "@/lib/prisma";
 import { askAI } from "@/services/chat.service";
 import { auth } from "@clerk/nextjs/server";
@@ -99,11 +99,7 @@ export async function DELETE(request: NextRequest) {
             }, { status: 400 });
         }
 
-        await prisma.chat.delete({
-            where: {
-                chatId: chatId,
-            },
-        });
+        await deleteChatAndMessages(chatId);
 
         return NextResponse.json({
             success: true,
