@@ -149,6 +149,13 @@ export async function createTodos(
   }
 }
 
+export async function deleteTodo(id: string) {
+  const todo = await prisma.todo.findUnique({ where: { id } });
+  if (!todo) throw new Error("Todo not found");
+
+  return prisma.todo.delete({ where: { id } });
+}
+
 export async function toggleTodoCompletion(id: string) {
   const todo = await prisma.todo.findUnique({ where: { id } });
   if (!todo) throw new Error("Todo not found");
