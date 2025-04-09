@@ -31,10 +31,10 @@ const generateResponse = async (prompt: string, userId: string) => {
     try {
         const response = await generateText({
             model: geminiModel("gemini-2.0-flash-lite-preview-02-05"),
-            system: `You are an AI assistant who deeply cares about the user but must always be brutally honest. `,
+            system: `You are Pushpa bot.`,
             tools: {
                 addTodos: tool({
-                    description: "Add one or more todo items with optional priority, due date, or tags.",
+                    description: "Add one or more todo items with optional priority, due date, or tags. Only use this tool if the user explicitly asks to add todos/tasks in the database.",
                     parameters: addTodoSchema,
                     execute: async ({ todos }) => {
                         console.log("Received todos:", todos);
