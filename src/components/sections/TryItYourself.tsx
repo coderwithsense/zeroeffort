@@ -1,31 +1,46 @@
-import React, { useState } from "react";
+import React from "react";
 import { Clock, Calendar, Brain, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { usePlaygroundStore } from "@/lib/stores/usePlaygroundStore";
 import { toast } from "sonner";
+import { useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
-export const TryItYourself: React.FC = () => {
-  const [taskInput, setTaskInput] = useState("");
-  const [isGenerating, setIsGenerating] = useState(false);
+export const TryItYourself = () => {
+  const router = useRouter();
+  const { isSignedIn, user } = useUser();
 
-  const handleGenerate = () => {
-    if (!taskInput) {
-      toast.error("Please describe your goals or tasks first");
-      return;
+// Playground store
+const {
+  prompt: playgroundPrompt,
+  setPrompt: setPlaygroundPrompt,
+  submitPrompt,
+  isSubmitting: isSubmittingPrompt,
+} = usePlaygroundStore();
+
+  const handleGenerate = async () => {
+    if (!playgroundPrompt) return;
+
+    try {
+      await submitPrompt(playgroundPrompt, user?.id);
+
+      if (isSignedIn) {
+        toast(
+          "We're creating your personalized productivity plan. Check back in a moment!"
+        );
+      } else {
+        router.push("/sign-up");
+      }
+    } catch (error) {
+      console.log(error)
+      toast.error("There was an error. Please try again.");
     }
-    
-    setIsGenerating(true);
-    toast.info("Generating your perfect plan...");
-    
-    // Simulate API call
-    setTimeout(() => {
-      toast.success("Your plan is ready!");
-      setIsGenerating(false);
-    }, 2000);
   };
+  
 
   return (
-    <div className="w-full py-16 px-4">
+    <div className="w-full py-16 px-4" id="playground">
       <div className="max-w-6xl mx-auto">
         <div className="bg-gradient-to-br from-white via-[#FCFCFF] to-[#F7F8FF] rounded-3xl shadow-lg border border-[#E5E9FF] p-10 relative overflow-hidden">
           {/* Decorative elements */}
@@ -52,8 +67,8 @@ export const TryItYourself: React.FC = () => {
                   <Search size={18} />
                 </div>
                 <Input
-                  value={taskInput}
-                  onChange={(e) => setTaskInput(e.target.value)}
+                  value={playgroundPrompt}
+                  onChange={(e) => setPlaygroundPrompt(e.target.value)}
                   placeholder="Create a stunning 30-day productivity plan for learning web development"
                   className="pl-10 h-14 rounded-xl border-2 border-[#E5E9FF] focus:border-[#310DF6] text-[#080808] bg-white shadow-sm"
                 />
@@ -61,7 +76,7 @@ export const TryItYourself: React.FC = () => {
               
               <Button 
                 onClick={handleGenerate}
-                disabled={isGenerating}
+                disabled={isSubmittingPrompt}
                 className="h-14 px-8 bg-gradient-to-r from-[#310DF6] to-[#6945FA] hover:from-[#2B0BD0] hover:to-[#5935EA] text-white font-medium text-base rounded-xl transition-all duration-300 shadow-md hover:shadow-lg hover:cursor-pointer"
               >
                 Generate

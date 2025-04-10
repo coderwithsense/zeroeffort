@@ -1,6 +1,7 @@
 import React from "react";
 import { Brain, Rocket, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 interface StepProps {
   number: number;
@@ -29,6 +30,7 @@ const Step: React.FC<StepProps> = ({ number, title, description, icon, bgColor, 
 };
 
 export const HowItWorks: React.FC = () => {
+  const router = useRouter()
   return (
     <div className="w-full py-20 bg-gradient-to-b from-white via-[#FCFCFF] to-[#F7F8FF]">
       <div className="max-w-6xl mx-auto px-6">
@@ -66,7 +68,7 @@ export const HowItWorks: React.FC = () => {
         </div>
         
         <div className="flex justify-center mt-14">
-          <Button className="bg-gradient-to-r from-[#310DF6] to-[#6945FA] hover:from-[#2B0BD0] hover:to-[#5935EA] text-white font-medium px-8 py-6 h-auto text-lg rounded-xl transition-all duration-300 shadow-md hover:shadow-lg hover:cursor-pointer">
+          <Button onClick={() => router.push("/sign-up")} className="bg-gradient-to-r from-[#310DF6] to-[#6945FA] hover:from-[#2B0BD0] hover:to-[#5935EA] text-white font-medium px-8 py-6 h-auto text-lg rounded-xl transition-all duration-300 shadow-md hover:shadow-lg hover:cursor-pointer">
             Get Started
           </Button>
         </div>

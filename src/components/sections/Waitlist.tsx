@@ -1,27 +1,32 @@
-import React, { useState } from "react";
+import React from "react";
 import { ArrowRight, Rocket } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { useWaitlistStore } from "@/lib/stores/useWaitlistStore";
 
 export const WaitlistSection: React.FC = () => {
-  const [email, setEmail] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const {
+    email: waitlistEmail,
+    setEmail: setWaitlistEmail,
+    submitEmail,
+    isSubmitting: isSubmittingWaitlist,
+  } = useWaitlistStore();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleWaitlistSignup = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    if (!email) {
-      toast.error("Please enter your email address");
-      return;
+    if (!waitlistEmail) return;
+
+    try {
+      await submitEmail(waitlistEmail);
+      toast(
+        "You've been added to our waitlist. We'll notify you when we launch!"
+      );
+    } catch (error) {
+      console.log(error)
+      toast.error(
+        "There was an error adding you to the waitlist. Please try again."
+      );
     }
-    
-    setIsLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      toast.success("You've been added to our waitlist!");
-      setEmail("");
-      setIsLoading(false);
-    }, 1000);
   };
 
   return (
@@ -38,13 +43,13 @@ export const WaitlistSection: React.FC = () => {
               Be among the first to experience ZeroEffort and receive early-bird pricing.
             </p>
             
-            <form onSubmit={handleSubmit} className="w-full max-w-md">
+            <form onSubmit={handleWaitlistSignup} className="w-full max-w-md">
               <div className="flex flex-col sm:flex-row gap-3 w-full">
                 <div className="relative flex-grow">
                   <Input
                     type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    value={waitlistEmail}
+                    onChange={(e) => setWaitlistEmail(e.target.value)}
                     placeholder="Enter your email"
                     className="h-12 px-4 w-full border-2 border-[#080808]/10 rounded-xl focus:border-[#310DF6] focus:ring-1 focus:ring-[#310DF6]"
                   />
@@ -52,7 +57,7 @@ export const WaitlistSection: React.FC = () => {
                 
                 <button 
                   type="submit"
-                  disabled={isLoading}
+                  disabled={isSubmittingWaitlist}
                   className="h-12 px-6 bg-gradient-to-r from-[#310DF6] to-[#6945FA] hover:from-[#2B0BD0] hover:to-[#5935EA] text-white font-medium rounded-xl transition-colors flex items-center justify-center gap-2 hover:cursor-pointer"
                 >
                   <span>Join Waitlist</span>
