@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
             chat = await createChat(chatId, prompt, userId);
         }
 
-        const message = await askAI(prompt, chat?.chatId as string, userId)
+        const message = await askAI(prompt, userId, chat?.chatId as string)
 
         return NextResponse.json({
             success: true,
