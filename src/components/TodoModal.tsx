@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Todo } from "@/lib/api";
 import useSWR from "swr";
+import { useTheme } from "next-themes";
 
 interface TodoModalProps {
   className?: string;
@@ -25,6 +26,7 @@ const fetcher = async (url: string) => {
 
 const TodoModal: React.FC<TodoModalProps> = ({ className }) => {
   const [open, setOpen] = useState(false);
+  const { theme } = useTheme();
 
   const {
     data: todosData,
@@ -70,35 +72,40 @@ const TodoModal: React.FC<TodoModalProps> = ({ className }) => {
         <Button
           variant="outline"
           size="icon"
-          className={cn("rounded-full bg-white shadow-md", className)}
+          className={cn(
+            "rounded-full border border-sidebar-border text-sidebar-foreground bg-sidebar-accent hover:bg-sidebar-accent/80 hover:text-sidebar-primary",
+            className
+          )}
+          aria-label="View todos"
         >
           <ListTodoIcon size={18} />
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md bg-card border-border">
         <DialogHeader>
-          <DialogTitle>Your Todos</DialogTitle>
+          <DialogTitle className="text-foreground">Your Todos</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-2 max-h-96 overflow-y-auto py-4">
           {isLoading ? (
-            <div className="text-center py-4">Loading todos...</div>
+            <div className="text-center py-4 text-muted-foreground">Loading todos...</div>
           ) : error ? (
-            <div className="text-center py-4 text-red-500">
+            <div className="text-center py-4 text-destructive">
               Error loading todos
             </div>
           ) : !todosData?.todos?.length ? (
-            <div className="text-center py-4 text-gray-500">No todos found</div>
+            <div className="text-center py-4 text-muted-foreground">No todos found</div>
           ) : (
             todosData.todos.map((todo) => (
               <div
                 key={todo.id}
-                className="flex items-center justify-between gap-2 p-3 bg-white rounded-lg border group"
+                className="flex items-center justify-between gap-2 p-3 bg-card/50 rounded-lg border border-border group hover:border-primary/30 transition-colors"
               >
-                <span className="flex-1">{todo.title}</span>
+                <span className="flex-1 text-foreground">{todo.title}</span>
                 <button
                   onClick={() => handleDelete(todo.id)}
-                  className="text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity duration-150"
+                  className="text-destructive hover:text-destructive/80 opacity-0 group-hover:opacity-100 transition-opacity duration-150"
+                  aria-label="Delete todo"
                 >
                   <Trash2 size={16} />
                 </button>
@@ -108,10 +115,19 @@ const TodoModal: React.FC<TodoModalProps> = ({ className }) => {
         </div>
 
         <div className="flex justify-end gap-2 pt-2">
-          <Button variant="outline" onClick={() => setOpen(false)}>
+          <Button 
+            variant="outline" 
+            onClick={() => setOpen(false)}
+            className="border-border text-foreground hover:bg-accent hover:text-accent-foreground"
+          >
             Close
           </Button>
-          <Button onClick={() => mutate()}>Refresh</Button>
+          <Button 
+            onClick={() => mutate()}
+            className="bg-primary text-primary-foreground hover:bg-primary/90"
+          >
+            Refresh
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
