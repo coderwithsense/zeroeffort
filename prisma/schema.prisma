@@ -35,6 +35,7 @@ model User {
   todoLists TodoList[] @relation("UserTodoLists")
   todos     Todo[]     @relation("UserTodos")
   Chat      Chat[]
+  Reminder  Reminder[]
 }
 
 model Chat {
@@ -62,6 +63,25 @@ model Message {
   chat      Chat        @relation("ChatMessages", fields: [chatId], references: [id])
 }
 
+enum ReminderRepeat {
+  daily
+  weekly
+  monthly
+  yearly
+}
+
+model Reminder {
+  id        String   @id @default(cuid()) @map("_id")
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  title     String
+  dueDate   DateTime
+  repeat    ReminderRepeat?
+  repeatEnd DateTime?
+  createdAt DateTime @default(now())
+  completed Boolean  @default(false)
+}
+
 model Todo {
   id         String   @id @default(cuid()) @map("_id")
   title      String
@@ -70,7 +90,7 @@ model Todo {
   updatedAt  DateTime @updatedAt
   userId     String
   user       User     @relation("UserTodos", fields: [userId], references: [id])
-  todoListId String @default("default")
+  todoListId String   @default("default")
   todoList   TodoList @relation(fields: [todoListId], references: [id])
 }
 
