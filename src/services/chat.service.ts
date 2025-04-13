@@ -1,8 +1,9 @@
-import { createMessage, createTodos, fetchTodos } from "@/lib/api";
+import { createMessage, createTodos, fetchTodos, getMessagesByChatId, MessageRole } from "@/lib/api"; // Import the new function
 import geminiModel from "@/lib/gemini";
 import { generateText, tool } from "ai";
 import { addTodoSchema } from "./ai.tools";
 import { z } from "zod";
+import { title } from "process";
 
 const askAI = async (prompt: string, chatId: string, userId: string) => {
     try {
@@ -12,7 +13,7 @@ const askAI = async (prompt: string, chatId: string, userId: string) => {
             prompt,
         });
 
-        const message = await generateResponse(prompt, userId);
+        const message = await generateResponse(prompt, chatId, userId); // Pass chatId to generateResponse
 
         await createMessage({
             chatId,
@@ -27,8 +28,24 @@ const askAI = async (prompt: string, chatId: string, userId: string) => {
     }
 };
 
-const generateResponse = async (prompt: string, userId: string) => {
+const todosObjectSchema = z.object({
+    title: z.string().describe("The content/title of the todo item"),
+    completed: z.boolean().describe("Whether the todo item is completed"),
+})
+
+const generateResponse = async (prompt: string, chatId: string, userId: string) => {
     try {
+        const previousMessages = await getMessagesByChatId(chatId);
+        console.log("Previous messages:", previousMessages);
+
+        const context = previousMessages
+            .map((msg: { role: MessageRole; content: string; }) => `${msg.role === 'user' ? 'User' : 'Pushpa bot'}: ${msg.content}`)
+            .join('\n');
+
+        console.log("Previous messages:", context);
+
+        const fullPrompt = `${context}\nUser: ${prompt}\nPushpa bot:`;
+
         const response = await generateText({
             model: geminiModel("gemini-2.0-flash-lite-preview-02-05"),
             system: `You are Pushpa bot.`,
@@ -51,9 +68,25 @@ const generateResponse = async (prompt: string, userId: string) => {
                             message: `${todos.length} todo(s) added successfully!`
                         };
                     }
+                }),
+                listTodos: tool({
+                    description: "List all todos for the current user in a format of listed items and points.",
+                    parameters: z.object({}),
+                    execute: async () => {
+                        const todos = await fetchTodos(userId);
+                        console.log(todos);
+                        return {
+                            success: true,
+                            todos: todos.map((todo) => ({
+                                title: todo.title,
+                                createdAt: todo.createdAt,
+                                // Add other fields if needed
+                            })),
+                        };
+                    }
                 })
             },
-            prompt: prompt,
+            prompt: prompt, // Use the full prompt with context
             onStepFinish: ({ usage }) => {
                 console.log(`Usage after total: ${usage.completionTokens}`);
             },

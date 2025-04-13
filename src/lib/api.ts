@@ -1,7 +1,7 @@
 import { createTitle } from '@/services/chat.service';
 import prisma from './prisma';
 
-type MessageRole = 'system' | 'user' | 'assistant';
+export type MessageRole = 'system' | 'user' | 'assistant';
 interface CreateMessageParams {
   chatId: string;
   role: MessageRole;
