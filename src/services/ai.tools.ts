@@ -110,17 +110,38 @@ export const upsertHybridMemory = async (userId: string, memory: UserMemory) => 
                 timezone: memory.timezone ?? brain.timezone,
                 dailyActiveHours: memory.dailyActiveHours ?? brain.dailyActiveHours,
                 preferredTools: mergeArray(brain.preferredTools, memory.preferredTools),
-                shortTermGoals: mergeArray(brain.shortTermGoals, memory.shortTermGoals),
-                longTermGoals: mergeArray(brain.longTermGoals, memory.longTermGoals),
-                currentProjects: mergeArray(brain.currentProjects, memory.currentProjects),
-                projectBacklog: mergeArray(brain.projectBacklog, memory.projectBacklog),
+                shortTermGoals: mergeArray(
+                    Array.isArray(brain.shortTermGoals) ? brain.shortTermGoals : undefined,
+                    Array.isArray(memory.shortTermGoals) ? memory.shortTermGoals : undefined
+                ),
+                longTermGoals: mergeArray(
+                    Array.isArray(brain.longTermGoals) ? brain.longTermGoals : undefined,
+                    Array.isArray(memory.longTermGoals) ? memory.longTermGoals : undefined
+                ),
+                currentProjects: mergeArray(
+                    Array.isArray(brain.currentProjects) ? brain.currentProjects : undefined,
+                    Array.isArray(memory.currentProjects) ? memory.currentProjects : undefined
+                ),
+                projectBacklog: mergeArray(
+                    Array.isArray(brain.projectBacklog) ? brain.projectBacklog : undefined,
+                    Array.isArray(memory.projectBacklog) ? memory.projectBacklog : undefined
+                ),
                 workloadStatus: memory.workloadStatus ?? brain.workloadStatus,
                 knownTopics: mergeArray(brain.knownTopics, memory.knownTopics),
                 interestedTopics: mergeArray(brain.interestedTopics, memory.interestedTopics),
-                currentLearning: mergeArray(brain.currentLearning, memory.currentLearning),
+                currentLearning: mergeArray(
+                    Array.isArray(brain.currentLearning) ? brain.currentLearning : undefined,
+                    memory.currentLearning
+                ),
                 checkInPreferences: memory.checkInPreferences ?? brain.checkInPreferences,
-                customTriggers: mergeArray(brain.customTriggers, memory.customTriggers),
-                recentRoutines: mergeArray(brain.recentRoutines, memory.recentRoutines),
+                customTriggers: mergeArray(
+                    Array.isArray(brain.customTriggers) ? brain.customTriggers : undefined,
+                    Array.isArray(memory.customTriggers) ? memory.customTriggers : undefined
+                ),
+                recentRoutines: mergeArray(
+                    Array.isArray(brain.recentRoutines) ? brain.recentRoutines : undefined,
+                    memory.recentRoutines
+                ),
                 notes: memory.notes ?? brain.notes
             }
         });
@@ -129,7 +150,7 @@ export const upsertHybridMemory = async (userId: string, memory: UserMemory) => 
     } else {
         console.log("No existing brain found, creating a new one for user:", userId);
         const brainUpload = await prisma.userMetadata.create({
-            where: { /* If using unique constraint, omit or adapt as needed */ },
+            // where: { /* If using unique constraint, omit or adapt as needed */ },
             data: {
                 userId,
                 ...memory
