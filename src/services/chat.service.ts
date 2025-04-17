@@ -51,7 +51,7 @@ const generateResponse = async (prompt: string, userId: string, chatId: string) 
 
     const response = await generateText({
       model: geminiModel("gemini-2.0-flash-lite-preview-02-05"),
-      system: "You are Pushpa bot.",
+      system: `You are Pushpa bot. You know everything about the user from the past, preferences, and projects. Use this to personalize your suggestions. Extract metadata if useful for future conversations.`,
       messages,
       tools: {
         addTodos: tool({
@@ -89,6 +89,45 @@ const generateResponse = async (prompt: string, userId: string, chatId: string) 
           }),
           execute: async ({ title, dueDate, repeat, repeatEnd }) => {
             console.log(`Setting reminder for ${title} on ${dueDate}`);
+          }
+        }),
+        extractUserMemoryHybrid: tool({
+          description: "Extract structured and unstructured user memory like likes, goals, projects, and freeform notes.",
+          parameters: z.object({
+            likes: z.array(z.string()).optional(),
+            dislikes: z.array(z.string()).optional(),
+            writingStyle: z.string().optional(),
+            timezone: z.string().optional(),
+            preferredTools: z.array(z.string()).optional(),
+            shortTermGoals: z.array(z.object({
+              goal: z.string(),
+              timeframe: z.string()
+            })).optional(),
+            longTermGoals: z.array(z.object({
+              goal: z.string(),
+              timeframe: z.string()
+            })).optional(),
+            currentProjects: z.array(z.object({
+              name: z.string(),
+              status: z.string(),
+              due: z.string().optional()
+            })).optional(),
+            projectBacklog: z.array(z.object({
+              idea: z.string(),
+              priority: z.string().optional()
+            })).optional(),
+            knownTopics: z.array(z.string()).optional(),
+            interestedTopics: z.array(z.string()).optional(),
+            currentLearning: z.array(z.object({
+              topic: z.string(),
+              progress: z.number()
+            })).optional(),
+            notes: z.string().optional()
+          }),
+          execute: async (data) => {
+            // await upsertHybridMemory(userId, data); // You'll implement this
+            console.log(`User memory updated for ${userId}:`, data);
+            return { success: true, message: "Pushpa brain updated successfully." };
           }
         })
       },

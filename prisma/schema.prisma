@@ -34,6 +34,7 @@ model User {
   updatedAt DateTime   @updatedAt
   todoLists TodoList[] @relation("UserTodoLists")
   todos     Todo[]     @relation("UserTodos")
+  metadata  UserMetadata? @relation("UserBrain")
   Chat      Chat[]
   Reminder  Reminder[]
 }
@@ -102,4 +103,38 @@ model TodoList {
   userId    String
   user      User     @relation("UserTodoLists", fields: [userId], references: [id])
   Todo      Todo[]
+}
+
+model UserMetadata {
+  id               String   @id @default(cuid()) @map("_id")
+  userId           String   @unique
+  user             User     @relation("UserBrain", fields: [userId], references: [id])
+
+  // === STRUCTURED MEMORY ===
+  likes            String[]
+  dislikes         String[]
+  writingStyle     String?
+  timezone         String?
+  dailyActiveHours Json?
+  preferredTools   String[]
+
+  shortTermGoals   Json?     // [{ goal: "...", timeframe: "..." }]
+  longTermGoals    Json?
+  currentProjects  Json?     // [{ name: "...", status: "...", due: "..." }]
+  projectBacklog   Json?
+  workloadStatus   String?
+
+  knownTopics      String[]
+  interestedTopics String[]
+  currentLearning  Json?
+
+  checkInPreferences Json?
+  customTriggers     Json?
+  recentRoutines     Json?
+
+  // === UNSTRUCTURED MEMORY ===
+  notes            String?
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 }
