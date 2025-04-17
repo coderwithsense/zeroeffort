@@ -91,69 +91,57 @@ export interface UserMemory {
 
 export const upsertHybridMemory = async (userId: string, memory: UserMemory) => {
     const brain = await prisma.userMetadata.findUnique({
-        where: {
-            userId: userId
-        }
+        where: { userId }
     });
+
+    // Helper to combine arrays instead of overwriting them
+    function mergeArray<T>(existing?: T[], incoming?: T[]) {
+        if (!incoming || incoming.length === 0) return existing;
+        return existing ? [...existing, ...incoming] : incoming;
+    }
+
     if (brain) {
         console.log("Brain found for user:", userId);
         const updatedBrain = await prisma.userMetadata.update({
-            where: {
-                userId: userId
-            },
+            where: { userId },
             data: {
-                likes: memory.likes,
-                dislikes: memory.dislikes,
-                writingStyle: memory.writingStyle,
-                timezone: memory.timezone,
-                dailyActiveHours: memory.dailyActiveHours,
-                preferredTools: memory.preferredTools,
-                shortTermGoals: memory.shortTermGoals,
-                longTermGoals: memory.longTermGoals,
-                currentProjects: memory.currentProjects,
-                projectBacklog: memory.projectBacklog,
-                workloadStatus: memory.workloadStatus,
-                knownTopics: memory.knownTopics,
-                interestedTopics: memory.interestedTopics,
-                currentLearning: memory.currentLearning,
-                checkInPreferences: memory.checkInPreferences,
-                customTriggers: memory.customTriggers,
-                recentRoutines: memory.recentRoutines,
-                notes: memory.notes
+                likes: mergeArray(brain.likes, memory.likes),
+                dislikes: mergeArray(brain.dislikes, memory.dislikes),
+                writingStyle: memory.writingStyle ?? brain.writingStyle,
+                timezone: memory.timezone ?? brain.timezone,
+                dailyActiveHours: memory.dailyActiveHours ?? brain.dailyActiveHours,
+                preferredTools: mergeArray(brain.preferredTools, memory.preferredTools),
+                shortTermGoals: mergeArray(brain.shortTermGoals, memory.shortTermGoals),
+                longTermGoals: mergeArray(brain.longTermGoals, memory.longTermGoals),
+                currentProjects: mergeArray(brain.currentProjects, memory.currentProjects),
+                projectBacklog: mergeArray(brain.projectBacklog, memory.projectBacklog),
+                workloadStatus: memory.workloadStatus ?? brain.workloadStatus,
+                knownTopics: mergeArray(brain.knownTopics, memory.knownTopics),
+                interestedTopics: mergeArray(brain.interestedTopics, memory.interestedTopics),
+                currentLearning: mergeArray(brain.currentLearning, memory.currentLearning),
+                checkInPreferences: memory.checkInPreferences ?? brain.checkInPreferences,
+                customTriggers: mergeArray(brain.customTriggers, memory.customTriggers),
+                recentRoutines: mergeArray(brain.recentRoutines, memory.recentRoutines),
+                notes: memory.notes ?? brain.notes
             }
         });
         console.log("Updated brain:", updatedBrain);
-        return Promise.resolve({ success: true });
+        return { success: true };
     } else {
         console.log("No existing brain found, creating a new one for user:", userId);
         const brainUpload = await prisma.userMetadata.create({
+            where: { /* If using unique constraint, omit or adapt as needed */ },
             data: {
-                userId: userId,
-                likes: memory.likes,
-                dislikes: memory.dislikes,
-                writingStyle: memory.writingStyle,
-                timezone: memory.timezone,
-                dailyActiveHours: memory.dailyActiveHours,
-                preferredTools: memory.preferredTools,
-                shortTermGoals: memory.shortTermGoals,
-                longTermGoals: memory.longTermGoals,
-                currentProjects: memory.currentProjects,
-                projectBacklog: memory.projectBacklog,
-                workloadStatus: memory.workloadStatus,
-                knownTopics: memory.knownTopics,
-                interestedTopics: memory.interestedTopics,
-                currentLearning: memory.currentLearning,
-                checkInPreferences: memory.checkInPreferences,
-                customTriggers: memory.customTriggers,
-                recentRoutines: memory.recentRoutines,
-                notes: memory.notes,
+                userId,
+                ...memory
             }
         });
         console.log("Created new brain:", brainUpload);
     }
+
     console.log(`Upserting memory for user ${userId}:`, memory);
-    return Promise.resolve({ success: true });
-}
+    return { success: true };
+};
 
 export async function getBrain(userId: string) {
     const brain = await prisma.userMetadata.findUnique({
