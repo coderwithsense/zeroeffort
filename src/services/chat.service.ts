@@ -4,7 +4,7 @@ import {
   fetchTodos,
   getMessagesByChatId,
 } from "@/lib/api";
-import geminiModel from "@/lib/gemini";
+import { geminiModel, gptModel } from "@/lib/models";
 import { generateText, tool } from "ai";
 import { addTodoSchema, upsertHybridMemory } from "./ai.tools";
 import { z } from "zod";
@@ -50,8 +50,9 @@ const generateResponse = async (prompt: string, userId: string, chatId: string) 
     messages.push({ role: "user", content: prompt });
 
     const response = await generateText({
-      model: geminiModel("gemini-2.0-flash-lite-preview-02-05"),
-      system: `You are Pushpa bot. You know everything about the user from the past, preferences, and projects. Use this to personalize your suggestions. Extract metadata if useful for future conversations.`,
+      model: geminiModel("gemini-2.0-flash-001"),
+      // model: gptModel("gpt-4"),
+      system: `"You are Pushpa, the user’s contextual second brain. Track their preferences, projects, and goals silently through conversation. Add todos/reminders when mentioned. Reflect, don’t ask generic questions. Learn passively. Use all chats as memory."`,
       messages,
       tools: {
         addTodos: tool({
@@ -92,40 +93,48 @@ const generateResponse = async (prompt: string, userId: string, chatId: string) 
           }
         }),
         extractUserMemoryHybrid: tool({
-          description: "Extract structured and unstructured user memory like likes, goals, projects, and freeform notes.",
+          description:
+            "Extracts structured and unstructured memory from user input. This includes preferences, mindset, ongoing projects, goals, tools, timezone, learning progress, and open-ended notes. Automatically detect and persist any updates to the user's brain metadata.",
           parameters: z.object({
-            likes: z.array(z.string()).optional(),
-            dislikes: z.array(z.string()).optional(),
-            writingStyle: z.string().optional(),
-            timezone: z.string().optional(),
-            preferredTools: z.array(z.string()).optional(),
+            likes: z.array(z.string()).optional().describe("Topics, activities, or tools the user enjoys or is passionate about"),
+            dislikes: z.array(z.string()).optional().describe("Things the user dislikes, avoids, or finds unproductive"),
+            writingStyle: z.string().optional().describe("User's preferred tone or style of writing (e.g., casual, direct, structured)"),
+            timezone: z.string().optional().describe("User's current timezone (e.g., Asia/Kolkata, UTC+5:30)"),
+            preferredTools: z.array(z.string()).optional().describe("Technologies, frameworks, or platforms the user prefers working with"),
+
             shortTermGoals: z.array(z.object({
-              goal: z.string(),
-              timeframe: z.string()
-            })).optional(),
+              goal: z.string().describe("Specific goal the user wants to achieve in the short term"),
+              timeframe: z.string().describe("Target date or duration for achieving this goal (e.g., 'by April 25, 2025')")
+            })).optional().describe("Immediate or near-future objectives"),
+
             longTermGoals: z.array(z.object({
-              goal: z.string(),
-              timeframe: z.string()
-            })).optional(),
+              goal: z.string().describe("A broader or long-range personal/professional goal"),
+              timeframe: z.string().describe("Expected completion timeframe for the long-term goal (e.g., '2025')")
+            })).optional().describe("Long-term or ambitious personal/professional goals"),
+
             currentProjects: z.array(z.object({
-              name: z.string(),
-              status: z.string(),
-              due: z.string().optional()
-            })).optional(),
+              name: z.string().describe("Name or title of the active project"),
+              status: z.string().describe("Current status of the project (e.g., active, paused, completed)"),
+              due: z.string().optional().describe("Optional due date or milestone for the project (ISO string or natural format)")
+            })).optional().describe("Projects the user is actively working on or maintaining"),
+
             projectBacklog: z.array(z.object({
-              idea: z.string(),
-              priority: z.string().optional()
-            })).optional(),
-            knownTopics: z.array(z.string()).optional(),
-            interestedTopics: z.array(z.string()).optional(),
+              idea: z.string().describe("Idea or feature the user wants to pursue"),
+              priority: z.string().optional().describe("Optional priority level (e.g., high, medium, low)")
+            })).optional().describe("Unstarted ideas, features, or project suggestions the user has noted"),
+
+            knownTopics: z.array(z.string()).optional().describe("Subjects or concepts the user already understands or is confident with"),
+            interestedTopics: z.array(z.string()).optional().describe("Topics the user is curious about or wants to explore"),
+
             currentLearning: z.array(z.object({
-              topic: z.string(),
-              progress: z.number()
-            })).optional(),
-            notes: z.string().optional()
+              topic: z.string().describe("What the user is currently learning"),
+              progress: z.number().describe("Progress in percentage (0–100) or rough estimate of completion")
+            })).optional().describe("Ongoing learning efforts, certifications, or personal upskilling plans"),
+
+            notes: z.string().optional().describe("Freeform notes, thoughts, mindset, patterns, or personality insights about the user")
           }),
           execute: async (data) => {
-            await upsertHybridMemory(userId, data); // You'll implement this
+            await upsertHybridMemory(userId, data);
             console.log(`User memory updated for ${userId}:`, data);
             return { success: true, message: "Pushpa brain updated successfully." };
           }
