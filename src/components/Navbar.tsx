@@ -82,7 +82,7 @@ const Navbar = () => {
             Playground
           </a>
           
-          {/* <ThemeToggle /> */}
+          <ThemeToggle />
 
           <SignedIn>
             <Button

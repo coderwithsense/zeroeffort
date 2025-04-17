@@ -258,7 +258,7 @@ const Sidebar = ({
             ZeroEffort
           </span>
         </div>
-        {/* <ThemeToggle /> */}
+        <ThemeToggle />
       </div>
 
       <div className="p-3">
