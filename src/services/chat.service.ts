@@ -6,7 +6,7 @@ import {
 } from "@/lib/api";
 import { geminiModel, gptModel } from "@/lib/models";
 import { generateText, tool } from "ai";
-import { addTodoSchema, upsertHybridMemory } from "./ai.tools";
+import { addTodoSchema, getBrain, upsertHybridMemory } from "./ai.tools";
 import { z } from "zod";
 import type { CoreMessage } from "ai";
 import { title } from "process";
@@ -92,7 +92,26 @@ const generateResponse = async (prompt: string, userId: string, chatId: string) 
             console.log(`Setting reminder for ${title} on ${dueDate}`);
           }
         }),
-        extractUserMemoryHybrid: tool({
+        getMemory: tool({
+          description:
+            "Get the user's memory. This includes preferences, mindset, ongoing projects, goals, tools, timezone, learning progress, and open-ended notes. and update the answer to the user query if the user has relevant memory. If the user has no memory, return a message saying 'No memory found.'",
+          parameters: z.object({}),
+          execute: async () => {
+            const memory = await getBrain(userId);
+            if (!memory) {
+              return {
+                success: false,
+                message: "No memory found.",
+              };
+            }
+            return {
+              success: true,
+              message: "Memory retrieved successfully.",
+              memory: memory
+            };
+          }
+        }),
+        updateUserMemoryHybrid: tool({
           description:
             "Extracts structured and unstructured memory from user input. This includes preferences, mindset, ongoing projects, goals, tools, timezone, learning progress, and open-ended notes. Automatically detect and persist any updates to the user's brain metadata.",
           parameters: z.object({

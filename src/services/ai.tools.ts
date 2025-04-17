@@ -88,7 +88,6 @@ export interface UserMemory {
     notes?: string;
 }
 
-
 export const upsertHybridMemory = async (userId: string, memory: UserMemory) => {
     const brain = await prisma.userMetadata.findUnique({
         where: { userId }
