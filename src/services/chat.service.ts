@@ -6,7 +6,7 @@ import {
 } from "@/lib/api";
 import geminiModel from "@/lib/gemini";
 import { generateText, tool } from "ai";
-import { addTodoSchema } from "./ai.tools";
+import { addTodoSchema, upsertHybridMemory } from "./ai.tools";
 import { z } from "zod";
 import type { CoreMessage } from "ai";
 import { title } from "process";
@@ -125,7 +125,7 @@ const generateResponse = async (prompt: string, userId: string, chatId: string) 
             notes: z.string().optional()
           }),
           execute: async (data) => {
-            // await upsertHybridMemory(userId, data); // You'll implement this
+            await upsertHybridMemory(userId, data); // You'll implement this
             console.log(`User memory updated for ${userId}:`, data);
             return { success: true, message: "Pushpa brain updated successfully." };
           }
