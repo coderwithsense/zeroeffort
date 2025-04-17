@@ -154,3 +154,18 @@ export const upsertHybridMemory = async (userId: string, memory: UserMemory) => 
     console.log(`Upserting memory for user ${userId}:`, memory);
     return Promise.resolve({ success: true });
 }
+
+export async function getBrain(userId: string) {
+    const brain = await prisma.userMetadata.findUnique({
+        where: {
+            userId: userId
+        }
+    });
+    if (brain) {
+        console.log("Brain found for user:", userId);
+        return brain;
+    } else {
+        console.log("No existing brain found for user:", userId);
+        return null;
+    }
+}
