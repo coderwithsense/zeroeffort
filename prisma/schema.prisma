@@ -27,9 +27,114 @@ model PlaygroundPrompt {
 }
 
 model User {
+  id        String        @id @default(cuid()) @map("_id")
+  clerkId   String        @unique
+  email     String        @unique
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  todoLists TodoList[]    @relation("UserTodoLists")
+  todos     Todo[]        @relation("UserTodos")
+  metadata  UserMetadata? @relation("UserBrain")
+  Chat      Chat[]
+  Reminder  Reminder[]
+}
+
+model Chat {
+  id        String    @id @default(cuid()) @map("_id")
+  chatId    String    @unique
+  title     String
+  createdAt DateTime  @default(now())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  messages  Message[] @relation("ChatMessages")
+}
+
+enum MessageRole {
+  system
+  user
+  assistant
+}
+
+model Message {
+  id        String      @id @default(cuid()) @map("_id")
+  content   String
+  role      MessageRole
+  createdAt DateTime    @default(now())
+  chatId    String
+  chat      Chat        @relation("ChatMessages", fields: [chatId], references: [id])
+}
+
+enum ReminderRepeat {
+  daily
+  weekly
+  monthly
+  yearly
+}
+
+model Reminder {
+  id        String          @id @default(cuid()) @map("_id")
+  userId    String
+  user      User            @relation(fields: [userId], references: [id])
+  title     String
+  dueDate   DateTime
+  repeat    ReminderRepeat?
+  repeatEnd DateTime?
+  createdAt DateTime        @default(now())
+  completed Boolean         @default(false)
+}
+
+model Todo {
+  id         String   @id @default(cuid()) @map("_id")
+  title      String
+  completed  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  userId     String
+  user       User     @relation("UserTodos", fields: [userId], references: [id])
+  todoListId String   @default("default")
+  todoList   TodoList @relation(fields: [todoListId], references: [id])
+}
+
+model TodoList {
   id        String   @id @default(cuid()) @map("_id")
-  clerkId   String   @unique
-  email     String   @unique
+  title     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
+  user      User     @relation("UserTodoLists", fields: [userId], references: [id])
+  Todo      Todo[]
+}
+
+model UserMetadata {
+  id     String @id @default(cuid()) @map("_id")
+  userId String @unique
+  user   User   @relation("UserBrain", fields: [userId], references: [id])
+
+  // === STRUCTURED MEMORY ===
+  likes            String[]
+  dislikes         String[]
+  writingStyle     String?
+  timezone         String?
+  dailyActiveHours Json?
+  preferredTools   String[]
+
+  shortTermGoals  Json? // [{ goal: "...", timeframe: "..." }]
+  longTermGoals   Json?
+  currentProjects Json? // [{ name: "...", status: "...", due: "..." }]
+  projectBacklog  Json?
+  workloadStatus  String?
+
+  knownTopics      String[]
+  interestedTopics String[]
+  currentLearning  Json?
+
+  checkInPreferences Json?
+  customTriggers     Json?
+  recentRoutines     Json?
+
+  // === UNSTRUCTURED MEMORY ===
+  notes String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
