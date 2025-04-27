@@ -83,16 +83,25 @@ model Reminder {
   completed Boolean         @default(false)
 }
 
+enum frequency {
+  normal
+  daily
+  weekly
+  monthly
+}
+
 model Todo {
-  id         String   @id @default(cuid()) @map("_id")
+  id         String    @id @default(cuid()) @map("_id")
   title      String
-  completed  Boolean  @default(false)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  completed  Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
   userId     String
-  user       User     @relation("UserTodos", fields: [userId], references: [id])
-  todoListId String   @default("default")
-  todoList   TodoList @relation(fields: [todoListId], references: [id])
+  frequency  frequency @default(normal)
+  endDate    DateTime?
+  user       User      @relation("UserTodos", fields: [userId], references: [id])
+  todoListId String    @default("default")
+  todoList   TodoList  @relation(fields: [todoListId], references: [id])
 }
 
 model TodoList {
