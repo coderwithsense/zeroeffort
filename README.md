@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+**ZeroEffort — AI Productivity Assistant for Solopreneurs**
 
-## Getting Started
+ZeroEffort is a minimal, smart productivity tool powered by AI — built for freelancers, indie hackers, and creators who want clarity without the chaos.
 
-First, run the development server:
+It helps you:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+* Plan tasks effortlessly with an AI agent
+* Detect burnout using context-aware memory
+* Sync calendars and automate recurring routines
+* Track progress using a "Metadata Brain" — your persistent second brain
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**Why ZeroEffort?**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Traditional productivity tools are either too rigid or too chaotic. ZeroEffort uses LangGraph-based AI agents and vector memory to give you:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+* Personalized nudges
+* Workflow automation
+* Long-term context retention
 
-## Learn More
+No tabs. No overthinking. Just get stuff done.
 
-To learn more about Next.js, take a look at the following resources:
+**Tech Stack**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+* Frontend: Next.js, TailwindCSS, ShadCN UI
+* AI: LangGraph, OpenAI/GPT, Metadata Context Protocol (MCP), RAG
+* Backend: FastAPI, Drizzle ORM, PostgreSQL
+* Vector Memory: Pinecone / Weaviate
+* Auth: Clerk / NextAuth
+* Infra: Vercel, Docker
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**Features**
 
-## Deploy on Vercel
+* Smart Task Planner with memory
+* Calendar sync & recurring automation
+* Burnout detection based on usage patterns
+* Modular AI Agent workflows
+* RAG support for personal knowledge bases (coming soon)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**Local Setup**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Clone the repo: `git clone https://github.com/your-username/zeroeffort.git`
+2. Navigate into it: `cd zeroeffort`
+3. Install dependencies: `pnpm install`
+4. Start development server: `pnpm dev`
+
+Make sure to set up your `.env` file with the required API keys.
+
+**Live Demo**
+
+Coming soon — [https://zeroeffort.xyz](https://zeroeffort.xyz)
+
+**Contributing**
+
+Have ideas or want to collaborate? Feel free to open issues or discussions.
+
+---
