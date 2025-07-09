@@ -249,6 +249,7 @@ const Sidebar = ({
   isMobile?: boolean;
   onChatSelect?: () => void;
 }) => {
+  const router = useRouter();
   return (
     <div className="flex flex-col h-full bg-sidebar border-r border-sidebar-border">
       <div className="flex items-center justify-between px-4 py-3 border-b border-sidebar-border">
@@ -299,7 +300,17 @@ const Sidebar = ({
       </div>
 
       <div className="p-4 border-t border-sidebar-border">
-        <TodoModal />
+        <div className="flex gap-2">
+          <TodoModal />
+          <Button
+            className="flex-1 rounded-full bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90"
+            onClick={() => {
+              router.push("/brain");
+            }}
+          >
+            VIEW BRAIN
+          </Button>
+        </div>
       </div>
     </div>
   );

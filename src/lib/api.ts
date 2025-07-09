@@ -1,4 +1,5 @@
 import { createTitle } from '@/services/chat.service';
+import { addDays, addWeeks, addMonths, isBefore, isAfter, isSameDay } from "date-fns";
 import prisma from './prisma';
 
 export type MessageRole = 'system' | 'user' | 'assistant';
@@ -15,6 +16,9 @@ export interface Todo {
   completed: boolean;
   userId: string;
   todoListId: string;
+  frequency: 'normal' | 'daily' | 'weekly' | 'monthly';
+  createdAt: Date;
+  endDate?: Date;
 }
 
 export async function getChats(userId: string) {
@@ -154,11 +158,52 @@ export async function fetchTodos(userId: string) {
     },
     orderBy: { createdAt: "desc" },
   });
-  return todos;
+
+  const today = new Date();
+
+  const expandedTodos = todos.flatMap(todo => {
+    if (todo.frequency === 'normal') {
+      return [todo];
+    }
+
+    const todosToShow = [];
+    let nextDate = todo.createdAt;
+
+    // Generate future instances till endDate
+    while (isBefore(nextDate, today) || isSameDay(nextDate, today)) {
+      if (todo.endDate && isAfter(nextDate, todo.endDate)) {
+        break;
+      }
+      if (isSameDay(nextDate, today)) {
+        todosToShow.push({
+          ...todo,
+          createdAt: nextDate
+        });
+      }
+
+      if (todo.frequency === 'daily') {
+        nextDate = addDays(nextDate, 1);
+      } else if (todo.frequency === 'weekly') {
+        nextDate = addWeeks(nextDate, 1);
+      } else if (todo.frequency === 'monthly') {
+        nextDate = addMonths(nextDate, 1);
+      }
+    }
+
+    return todosToShow;
+  });
+
+  return expandedTodos;
 }
 
 export async function createTodos(
-  todos: { title: string; userId: string; todoListId?: string }[]
+  todos: {
+    title: string;
+    userId: string;
+    todoListId?: string;
+    frequency?: 'normal' | 'daily' | 'weekly' | 'monthly';
+    endDate?: Date;
+  }[]
 ) {
   try {
     const createdTodos = await prisma.$transaction(
@@ -168,6 +213,8 @@ export async function createTodos(
             title: todo.title,
             userId: todo.userId,
             todoListId: todo.todoListId,
+            frequency: todo.frequency ?? 'normal',
+            endDate: todo.endDate,
           },
         })
       )
@@ -177,6 +224,16 @@ export async function createTodos(
     console.error(`[TODO_API_CREATE_ERROR]: ${error}`);
     throw error;
   }
+}
+
+export async function updateTodo(id: string, data: Partial<Todo>) {
+  const todo = await prisma.todo.findUnique({ where: { id } });
+  if (!todo) throw new Error("Todo not found");
+
+  return prisma.todo.update({
+    where: { id },
+    data,
+  });
 }
 
 export async function deleteTodo(id: string) {

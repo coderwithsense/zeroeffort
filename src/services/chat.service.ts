@@ -14,7 +14,10 @@ import { title } from "process";
 const todosObjectSchema = z.object({
   title: z.string().describe("The content/title of the todo item"),
   completed: z.boolean().describe("Whether the todo item is completed"),
+  frequency: z.enum(["normal", "daily", "weekly", "monthly"]).optional().describe("How often the task should repeat"),
+  endDate: z.string().optional().describe("Optional end date for recurring tasks"),
 });
+
 
 const askAI = async (prompt: string, userId: string, chatId: string) => {
   try {
@@ -57,11 +60,24 @@ const generateResponse = async (prompt: string, userId: string, chatId: string) 
       tools: {
         addTodos: tool({
           description:
-            "Add one or more todo items with optional priority, due date, or tags. Only use this tool if the user explicitly asks to add todos/tasks in the database.",
-          parameters: addTodoSchema,
+            "Add one or more todo items, with optional priority, due date, frequency (daily, weekly, monthly) or tags. Use this tool if the user explicitly asks to add todos or tasks.",
+          parameters: z.object({
+            todos: z.array(z.object({
+              title: z.string().describe("The content/title of the todo item"),
+              frequency: z.enum(["normal", "daily", "weekly", "monthly"]).optional().describe("How often the task should repeat"),
+              endDate: z.string().optional().describe("Optional end date for recurring tasks in YYYY-MM-DD format"),
+            }))
+          }),
           execute: async ({ todos }) => {
-            const formattedTodos = todos.map(({ title }) => ({ title, userId }));
+            const formattedTodos = todos.map(({ title, frequency, endDate }) => ({
+              title,
+              userId,
+              frequency: frequency ?? "normal",
+              endDate: endDate ? new Date(endDate) : undefined,
+            }));
+
             await createTodos(formattedTodos);
+
             return {
               success: true,
               message: `${todos.length} todo(s) added successfully!`,
