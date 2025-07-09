@@ -250,6 +250,7 @@ const Sidebar = ({
   onChatSelect?: () => void;
 }) => {
   const router = useRouter();
+  
   return (
     <div className="flex flex-col h-full bg-sidebar border-r border-sidebar-border">
       <div className="flex items-center justify-between px-4 py-3 border-b border-sidebar-border">
