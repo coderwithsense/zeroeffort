@@ -97,13 +97,11 @@ const TodoModal: React.FC<TodoModalProps> = ({ className }) => {
         <Button
           variant="outline"
           size="icon"
-          className={cn(
-            "rounded-full border border-sidebar-border text-sidebar-foreground bg-sidebar-accent hover:bg-sidebar-accent/80 hover:text-sidebar-primary",
-            className
-          )}
+          className="flex-1 rounded-full bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90"
           aria-label="View todos"
         >
-          <ListTodoIcon size={18} />
+          {/* <ListTodoIcon size={18} /> */}
+          Open Todos
         </Button>
       </DialogTrigger>
 
@@ -154,67 +152,86 @@ const TodoModal: React.FC<TodoModalProps> = ({ className }) => {
         {/* List Todos */}
         <div className="space-y-2 max-h-96 overflow-y-auto py-4">
           {isLoading ? (
-            <div className="text-center py-4 text-muted-foreground">Loading todos...</div>
+            <div className="text-center py-4 text-muted-foreground">
+              Loading todos...
+            </div>
           ) : error ? (
-            <div className="text-center py-4 text-destructive">Error loading todos</div>
+            <div className="text-center py-4 text-destructive">
+              Error loading todos
+            </div>
           ) : !todosData?.todos?.length ? (
-            <div className="text-center py-4 text-muted-foreground">No todos found</div>
+            <div className="text-center py-4 text-muted-foreground">
+              No todos found
+            </div>
           ) : (
-            [...todosData.todos].sort((a, b) => {
-              if (a.completed === b.completed) return 0;
-              return a.completed ? 1 : -1; // Active first, completed after
-            }).map((todo) => (
-              <div
-                key={todo.id}
-                className={cn(
-                  "flex flex-col gap-1 p-3 bg-card/50 rounded-lg border border-border group transition-colors",
-                  todo.completed ? "opacity-50" : "hover:border-primary/30"
-                )}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex flex-col">
-                    <span className={cn("font-medium text-foreground", todo.completed && "line-through text-muted-foreground")}>
-                      {todo.title}
-                    </span>
+            [...todosData.todos]
+              .sort((a, b) => {
+                if (a.completed === b.completed) return 0;
+                return a.completed ? 1 : -1; // Active first, completed after
+              })
+              .map((todo) => (
+                <div
+                  key={todo.id}
+                  className={cn(
+                    "flex flex-col gap-1 p-3 bg-card/50 rounded-lg border border-border group transition-colors",
+                    todo.completed ? "opacity-50" : "hover:border-primary/30"
+                  )}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-col">
+                      <span
+                        className={cn(
+                          "font-medium text-foreground",
+                          todo.completed && "line-through text-muted-foreground"
+                        )}
+                      >
+                        {todo.title}
+                      </span>
 
-                    <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                      {todo.frequency !== "normal" && (
-                        <span className="px-2 py-0.5 rounded-full border border-primary text-primary capitalize">
-                          {todo.frequency}
+                      <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                        {todo.frequency !== "normal" && (
+                          <span className="px-2 py-0.5 rounded-full border border-primary text-primary capitalize">
+                            {todo.frequency}
+                          </span>
+                        )}
+                        <span>
+                          Added: {format(new Date(todo.createdAt), "PP")}
                         </span>
-                      )}
-                      <span>Added: {format(new Date(todo.createdAt), "PP")}</span>
-                      {todo.endDate && (
-                        <span>Until: {format(new Date(todo.endDate), "PP")}</span>
-                      )}
+                        {todo.endDate && (
+                          <span>
+                            Until: {format(new Date(todo.endDate), "PP")}
+                          </span>
+                        )}
+                        {todo.completed && (
+                          <span className="px-2 py-0.5 rounded-full border border-green-500 text-green-500">
+                            Completed
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={todo.completed}
+                        onChange={() =>
+                          handleToggleComplete(todo.id, !todo.completed)
+                        }
+                        className="w-4 h-4 cursor-pointer accent-primary"
+                      />
                       {todo.completed && (
-                        <span className="px-2 py-0.5 rounded-full border border-green-500 text-green-500">
-                          Completed
-                        </span>
+                        <button
+                          onClick={() => setConfirmDeleteId(todo.id)}
+                          className="text-destructive hover:text-destructive/80"
+                          aria-label="Delete todo"
+                        >
+                          <Trash2 size={16} />
+                        </button>
                       )}
                     </div>
                   </div>
-
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={todo.completed}
-                      onChange={() => handleToggleComplete(todo.id, !todo.completed)}
-                      className="w-4 h-4 cursor-pointer accent-primary"
-                    />
-                    {todo.completed && (
-                      <button
-                        onClick={() => setConfirmDeleteId(todo.id)}
-                        className="text-destructive hover:text-destructive/80"
-                        aria-label="Delete todo"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    )}
-                  </div>
                 </div>
-              </div>
-            ))
+              ))
           )}
         </div>
 
@@ -224,11 +241,14 @@ const TodoModal: React.FC<TodoModalProps> = ({ className }) => {
             <div className="bg-background border rounded-lg p-6 max-w-sm space-y-4 text-center">
               <h2 className="text-lg font-semibold">Delete Todo?</h2>
               <p className="text-muted-foreground text-sm">
-                Are you sure you want to delete this todo? <br /> 
+                Are you sure you want to delete this todo? <br />
                 If it is a recurring task, it will not be repeated again.
               </p>
               <div className="flex justify-center gap-4 pt-2">
-                <Button variant="outline" onClick={() => setConfirmDeleteId(null)}>
+                <Button
+                  variant="outline"
+                  onClick={() => setConfirmDeleteId(null)}
+                >
                   Cancel
                 </Button>
                 <Button variant="destructive" onClick={handleConfirmDelete}>
