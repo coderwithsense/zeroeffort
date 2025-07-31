@@ -2,25 +2,6 @@ import { createTitle } from '@/services/chat.service';
 import { addDays, addWeeks, addMonths, isBefore, isAfter, isSameDay } from "date-fns";
 import prisma from './prisma';
 
-export type MessageRole = 'system' | 'user' | 'assistant';
-interface CreateMessageParams {
-  chatId: string;
-  role: MessageRole;
-  content?: string;
-  prompt?: string;
-}
-
-export interface Todo {
-  id: string;
-  title: string;
-  completed: boolean;
-  userId: string;
-  todoListId: string;
-  frequency: 'normal' | 'daily' | 'weekly' | 'monthly';
-  createdAt: Date;
-  endDate?: Date;
-}
-
 export async function getChats(userId: string) {
   return prisma.chat.findMany({
     where: { userId },

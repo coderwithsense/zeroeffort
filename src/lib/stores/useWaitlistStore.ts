@@ -1,15 +1,5 @@
 import { create } from 'zustand';
 
-interface WaitlistState {
-    email: string;
-    isSubmitting: boolean;
-    isSuccess: boolean;
-    error: string | null;
-    setEmail: (email: string) => void;
-    submitEmail: (email: string) => Promise<void>;
-    reset: () => void;
-}
-
 export const useWaitlistStore = create<WaitlistState>((set) => ({
     email: '',
     isSubmitting: false,

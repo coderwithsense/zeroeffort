@@ -10,7 +10,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Todo } from "@/lib/api";
 import useSWR from "swr";
 import { useTheme } from "next-themes";
 import { format } from "date-fns";
@@ -105,7 +104,7 @@ const TodoModal: React.FC<TodoModalProps> = ({ className }) => {
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-md bg-card border-border">
+      <DialogContent className="sm:max-w-md bg-secondary border-border">
         <DialogHeader>
           <DialogTitle className="text-foreground">Your Todos</DialogTitle>
         </DialogHeader>

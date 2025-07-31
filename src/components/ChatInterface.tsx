@@ -35,26 +35,6 @@ import {
 } from "@/components/ui/tooltip";
 import { useTheme } from "next-themes";
 
-interface Message {
-  id: string;
-  content: string;
-  role: "user" | "assistant";
-  createdAt: string;
-}
-
-interface Chat {
-  id: string;
-  chatId: string;
-  title: string;
-  createdAt: string;
-}
-
-interface SuggestionProps {
-  text: string;
-  icon?: React.ReactNode;
-  onClick: (text: string) => void;
-}
-
 const fetchMessages = async (url: string) => {
   const res = await fetch(url);
   if (!res.ok) throw new Error("Failed to fetch messages");
@@ -250,7 +230,7 @@ const Sidebar = ({
   onChatSelect?: () => void;
 }) => {
   const router = useRouter();
-  
+
   return (
     <div className="flex flex-col h-full bg-sidebar border-r border-sidebar-border">
       <div className="flex items-center justify-between px-4 py-3 border-b border-sidebar-border">
