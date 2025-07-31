@@ -50,3 +50,14 @@ export function ErrorState() {
     </div>
   );
 }
+
+export function EmptyBrainState() {
+  return (
+    <div className="flex h-screen items-center justify-center">
+      <div className="text-center">
+        <h2 className="text-2xl font-bold">No brain data found</h2>
+        <p className="mt-2 text-gray-600">We're still learning about you</p>
+      </div>
+    </div>
+  );
+}
