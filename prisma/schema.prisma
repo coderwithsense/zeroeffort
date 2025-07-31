@@ -27,16 +27,32 @@ model PlaygroundPrompt {
 }
 
 model User {
-  id        String        @id @default(cuid()) @map("_id")
-  clerkId   String        @unique
-  email     String        @unique
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
-  todoLists TodoList[]    @relation("UserTodoLists")
-  todos     Todo[]        @relation("UserTodos")
-  metadata  UserMetadata? @relation("UserBrain")
-  Chat      Chat[]
-  Reminder  Reminder[]
+  id                  String               @id @default(cuid()) @map("_id")
+  clerkId             String               @unique
+  email               String               @unique
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  todoLists           TodoList[]           @relation("UserTodoLists")
+  todos               Todo[]               @relation("UserTodos")
+  metadata            UserMetadata?        @relation("UserBrain")
+  Chat                Chat[]
+  Reminder            Reminder[]
+  CalendarIntegration CalendarIntegration?
+}
+
+model CalendarIntegration {
+  id     String @id @default(cuid()) @map("_id")
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+
+  accessToken  String
+  refreshToken String
+  expiryDate   DateTime
+  scope        String?
+  tokenType    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Chat {

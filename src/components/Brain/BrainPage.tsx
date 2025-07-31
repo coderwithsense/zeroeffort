@@ -26,6 +26,7 @@ import {
   PreferencesTab,
   RoutinesTab,
 } from "./Tabs";
+import SettingsPage from "./Settings/Settings";
 // import { UserBrain } from "@/types/userBrain";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -108,14 +109,7 @@ export default function BrainPage() {
         {activeTab === "knowledge" && <KnowledgeTab brain={brain} />}
         {activeTab === "routines" && <RoutinesTab brain={brain} />}
         {activeTab === "notes" && <NotesTab brain={brain} />}
-        {activeTab === "settings" && (
-          <div className="col-span-full">
-            <h2 className="text-lg font-semibold mb-4">Settings</h2>
-            <p className="text-muted-foreground">
-              Settings management is coming soon!
-            </p>
-          </div>
-        )}
+        {activeTab === "settings" && <SettingsPage />}
 
         <GuideBox commands={guideCommands[activeTab]} />
       </>

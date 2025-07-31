@@ -9,3 +9,7 @@ export function cn(...inputs: ClassValue[]) {
 export function generateUniqueId() {
   return uuidv4();
 }
+
+export function getUrlOrigin() {
+  return window.location.origin;
+}
