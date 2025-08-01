@@ -34,6 +34,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useTheme } from "next-themes";
+import Image from "next/image";
 
 const fetchMessages = async (url: string) => {
   const res = await fetch(url);
@@ -143,7 +144,13 @@ const EmptyChatSuggestions = ({
   return (
     <div className="flex flex-col items-center justify-center h-full px-4">
       <div className="mb-8 flex items-center justify-center w-16 h-16 rounded-full bg-primary/10">
-        <ZapIcon size={24} className="text-primary" />
+        <Image
+          src="/logo.png"
+          alt="ZeroEffort Logo"
+          width={32}
+          height={32}
+          className="rounded-full"
+        />
       </div>
 
       <h2 className="text-2xl font-semibold text-foreground mb-2">
@@ -235,7 +242,13 @@ const Sidebar = ({
     <div className="flex flex-col h-full bg-sidebar border-r border-sidebar-border">
       <div className="flex items-center justify-between px-4 py-3 border-b border-sidebar-border">
         <div className="flex items-center gap-2">
-          <ZapIcon className="h-5 w-5 text-sidebar-primary" />
+          <Image
+            src="/logo.png"
+            alt="ZeroEffort Logo"
+            width={32}
+            height={32}
+            className="rounded-full"
+          />
           <span className="font-medium text-sidebar-foreground">
             ZeroEffort
           </span>
@@ -469,7 +482,13 @@ const ChatInterface = () => {
 
       {/* App Logo for Mobile */}
       <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-20 md:hidden flex items-center gap-2">
-        <ZapIcon className="h-5 w-5 text-primary" />
+        <Image
+          src="/logo.png"
+          alt="ZeroEffort Logo"
+          width={32}
+          height={32}
+          className="rounded-full"
+        />
         <span className="font-medium text-foreground">ZeroEffort</span>
       </div>
 
@@ -495,7 +514,13 @@ const ChatInterface = () => {
           <SheetHeader className="px-4 py-3 border-b border-sidebar-border">
             <SheetTitle className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <ZapIcon className="h-5 w-5 text-sidebar-primary" />
+                <Image
+                  src="/logo.png"
+                  alt="ZeroEffort Logo"
+                  width={32}
+                  height={32}
+                  className="rounded-full"
+                />
                 <span className="text-sidebar-foreground">ZeroEffort</span>
               </div>
               <ThemeToggle />
