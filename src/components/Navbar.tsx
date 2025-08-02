@@ -1,10 +1,11 @@
 "use client";
 import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react";
 import { Button } from "@/components/ui/button";
-import { Zap, MoonIcon, SunIcon } from "lucide-react";
+import { MoonIcon, SunIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 const ThemeToggle = () => {
   const { theme, setTheme } = useTheme();
@@ -48,7 +49,7 @@ const ThemeToggle = () => {
 
 const Navbar = () => {
   const router = useRouter();
-  
+
   const handleSignIn = () => {
     router.push("/sign-in");
   };
@@ -62,7 +63,13 @@ const Navbar = () => {
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center">
           <div className="bg-primary text-primary-foreground p-2 rounded-xl mr-2 shadow-lg transition-all hover:bg-primary/90">
-            <Zap className="h-5 w-5" />
+            <Image
+              src="/logo.png"
+              alt="ZeroEffort Logo"
+              width={32}
+              height={32}
+              className="rounded-full"
+            />
           </div>
           <div className="text-2xl font-bold text-foreground">
             <span className="text-primary">Zero</span>Effort
@@ -81,7 +88,7 @@ const Navbar = () => {
           >
             Playground
           </a>
-          
+
           <ThemeToggle />
 
           <SignedIn>

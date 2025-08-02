@@ -27,8 +27,8 @@ const ChatInterface = () => {
 
   // Suggestions for new chats
   const suggestions = [
-    "Help me create a weekly meal plan",
-    "Explain quantum computing in simple terms",
+    "Learn that i like to play the guitar",
+    "Add to make an AI saas as a todo, and also list all my todos",
     "Draft an email to request time off work",
     "Write a short story about a space explorer",
   ];

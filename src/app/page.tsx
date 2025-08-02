@@ -10,7 +10,6 @@ import {
   CalendarDays,
   ChevronRight,
   Check,
-  Zap,
   MousePointerClick,
   Search,
   Instagram,
@@ -21,6 +20,7 @@ import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 import { useWaitlistStore } from "@/lib/stores/useWaitlistStore";
 import { usePlaygroundStore } from "@/lib/stores/usePlaygroundStore";
+import Image from "next/image";
 
 const Index = () => {
   const router = useRouter();
@@ -52,7 +52,7 @@ const Index = () => {
         "You've been added to our waitlist. We'll notify you when we launch!"
       );
     } catch (error) {
-      console.log(error)
+      console.log(error);
       toast.error(
         "There was an error adding you to the waitlist. Please try again."
       );
@@ -73,7 +73,7 @@ const Index = () => {
         router.push("/sign-up");
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
       toast.error("There was an error. Please try again.");
     }
   };
@@ -283,7 +283,13 @@ const Index = () => {
             <div className="group transition-all duration-300 transform hover:-translate-y-2">
               <div className="flex flex-col items-center">
                 <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center shadow-md mb-4 ring-2 ring-green-100 group-hover:ring-green-300 transition-all duration-300">
-                  <Zap className="h-8 w-8 text-green-500" />
+                  <Image
+                    src="/logo.png"
+                    alt="ZeroEffort Logo"
+                    width={32}
+                    height={32}
+                    className="rounded-full"
+                  />
                 </div>
                 <p className="font-medium text-slate-600 group-hover:text-green-600 transition-colors duration-300">
                   Smart Planning

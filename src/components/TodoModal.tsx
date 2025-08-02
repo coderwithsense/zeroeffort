@@ -104,9 +104,9 @@ const TodoModal: React.FC<TodoModalProps> = ({ className }) => {
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-md bg-secondary border-border">
+      <DialogContent className="sm:max-w-md bg-background border-border">
         <DialogHeader>
-          <DialogTitle className="text-foreground">Your Todos</DialogTitle>
+          <DialogTitle className="text-background">Your Todos</DialogTitle>
         </DialogHeader>
 
         {/* Create New Todo */}

@@ -1,6 +1,7 @@
 import React from "react";
-import { UserIcon, ZapIcon } from "lucide-react";
+import { UserIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 interface ChatMessageProps {
   message: Message;
@@ -25,7 +26,13 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
         {isUser ? (
           <UserIcon size={18} className="text-primary" />
         ) : (
-          <ZapIcon size={18} className="text-primary" />
+          <Image
+            src="/logo.png"
+            alt="ZeroEffort Logo"
+            width={32}
+            height={32}
+            className="rounded-full"
+          />
         )}
       </div>
 
