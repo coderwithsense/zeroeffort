@@ -2,6 +2,10 @@ import React from "react";
 import { UserIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeHighlight from "rehype-highlight";
+// import "highlight.js/styles/github.css";
 
 interface ChatMessageProps {
   message: Message;
@@ -38,15 +42,18 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
 
       <div
         className={cn(
-          "p-4 rounded-lg max-w-3xl overflow-hidden",
+          "p-4 rounded-lg max-w-3xl overflow-hidden text-sm",
           isUser
             ? "bg-primary/5 border border-primary/10 text-foreground"
             : "bg-card border border-border shadow-sm"
         )}
       >
-        <div className="prose prose-sm max-w-none dark:prose-invert">
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          rehypePlugins={[rehypeHighlight]}
+        >
           {message.content}
-        </div>
+        </ReactMarkdown>
       </div>
     </div>
   );
